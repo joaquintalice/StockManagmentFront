@@ -58,7 +58,6 @@ export default function StockList() {
                                     <Thead>
                                         <Tr>
                                             <Th>Nombre</Th>
-                                            <Th>Descripción</Th>
                                             <Th>Cantidad</Th>
                                             <Th>Precio de compra</Th>
                                             <Th>Precio de venta</Th>
@@ -71,9 +70,6 @@ export default function StockList() {
                                                 <Tr key={prod.id}>
                                                     <Td>
                                                         <Text>{prod.name}</Text>
-                                                    </Td>
-                                                    <Td>
-                                                        <Text>{prod.description || 'Sin descripción'}</Text>
                                                     </Td>
                                                     <Td>
                                                         <Text>{prod.quantity} kilos</Text>

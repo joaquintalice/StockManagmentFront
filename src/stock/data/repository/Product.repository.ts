@@ -1,4 +1,5 @@
 import Product from "../interfaces/Product";
+import CreateProduct from "../interfaces/CreateProduct";
 
 
 const BASE_URL = 'http://localhost:3000/products';
@@ -36,9 +37,9 @@ const ProductRepository = {
         }
     },
 
-    create: async (createProductData: Product) => {
+    create: async (createProductData: CreateProduct) => {
         try {
-            const { name, description, date, quantity, buyPrice, sellPrice, warehouseId, stockMovementDetailId } = createProductData;
+            const { name, quantity, buyPrice, sellPrice } = createProductData;
             const res = await fetch(BASE_URL, {
                 method: 'POST',
                 headers: {
@@ -46,17 +47,13 @@ const ProductRepository = {
                 },
                 body: JSON.stringify({
                     name,
-                    description,
-                    date,
                     quantity,
                     buyPrice,
                     sellPrice,
-                    warehouseId,
-                    stockMovementDetailId
                 }),
             });
             const data = await res.json();
-            alert('data guardada en la db je');
+            console.log('Data registrada exitosamente', data);
             return data;
         } catch (error) {
             console.error('Error en create:', error);
