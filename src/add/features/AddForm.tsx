@@ -125,7 +125,6 @@ export default function AddForm() {
                                 name="quantity"
                                 value={formik.values.quantity}
                                 onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
                             />
                         </NumberInput>
                         <Text bg='red.300'>{formik.errors.quantity}</Text>
