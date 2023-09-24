@@ -21,7 +21,7 @@ const ProductRepository = {
         }
     },
 
-    getById: async (id: number) => {
+    getById: async (id: string) => {
         try {
             const res = await fetch(`${BASE_URL}/${id}`, {
                 method: 'GET',
@@ -57,7 +57,7 @@ const ProductRepository = {
             return data;
         } catch (error) {
             console.error('Error en create:', error);
-            throw error;
+            throw new Error(`error je ${error}`);
         }
     },
 
