@@ -24,7 +24,7 @@ import { IconType } from 'react-icons'
 import { ReactText } from 'react'
 import Link from 'next/link'
 import { PiPlantBold } from 'react-icons/pi'
-import { BsClipboard2Plus } from 'react-icons/bs'
+import { MdPointOfSale } from 'react-icons/md'
 
 interface LinkItemProps {
     name: string
@@ -34,7 +34,7 @@ interface LinkItemProps {
 const LinkItems: Array<LinkItemProps> = [
     { name: 'Home', icon: FiHome, href: '/' },
     { name: 'Stock', icon: FiClipboard, href: '/stock' },
-    { name: 'Agregar', icon: BsClipboard2Plus, href: '/add' },
+    { name: 'Ventas', icon: MdPointOfSale, href: '/sales' },
 ]
 
 export default function Navbar({
