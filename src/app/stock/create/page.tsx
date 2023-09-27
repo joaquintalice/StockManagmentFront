@@ -1,6 +1,7 @@
-import PageLayout from '@/shared/components/layouts/pageLayout';
+import PageLayout from '@/shared/components/layouts/pageLayout'
+import StockCreate from '@/stock/features/StockCreate';
 import StockHeader from '@/stock/features/StockHeader';
-import StockList from '@/stock/features/StockList';
+
 
 export default async function StockPage() {
 
@@ -11,7 +12,7 @@ export default async function StockPage() {
                 header: (
                     <StockHeader />
                 ),
-                content: <StockList />,
+                content: <StockCreate />,
             }}
         </PageLayout>
     );
