@@ -52,14 +52,17 @@ const ProductRepository = {
                     sellPrice,
                 }),
             });
+
             const data = await res.json();
-            console.log('Data registrada exitosamente', data);
+            console.log(data);
             return data;
         } catch (error) {
-            console.error('Error en create:', error);
-            throw new Error(`error je ${error}`);
+            // Propaga el error original o crea una excepción personalizada
+            console.error('Error en create, trycatch:', error);
+            throw error;
         }
-    },
+    }
+    ,
 
     update: async (id: number, updateProductData: Partial<Product>) => {
         try {

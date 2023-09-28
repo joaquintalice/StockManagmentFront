@@ -9,11 +9,15 @@ import {
     TableContainer,
     Text,
     Center,
-    Heading,
+    Spinner,
+    Button,
+    Link,
 } from '@chakra-ui/react'
 import ProductRepository from '../data/repository/Product.repository';
 import { useEffect, useState } from 'react';
 import Product from '../data/interfaces/Product';
+import formatDatetime from '../../shared/utils/formatDate';
+
 
 export default function StockList() {
     const [data, setData] = useState<Product[] | null>(null);
@@ -26,17 +30,14 @@ export default function StockList() {
                 setLoading(true)
                 const productData = await ProductRepository.getAll();
                 setData(productData);
-                console.log(productData)
                 setLoading(false);
                 setError(null)
                 return productData
             } catch (error) {
                 setLoading(false)
-                setError('Error fetching data');
-                console.error('Error al obtener datos:', error);
+                setError('No hay ningún producto registrado');
             }
         }
-
         getData();
     }, []);
 
@@ -44,14 +45,10 @@ export default function StockList() {
     return (
         <>
             {error ? (<Center><Text>{error}</Text></Center>) :
-                loading ? (<Center>Cargando...</Center>) :
+                loading ? (<Center mt='5rem'><Spinner color='red.500' size='lg' /></Center>) :
                     data ? (
                         <>
-                            <Center>
-                                <Heading as='h1' my='2rem'>
-                                    Mercadería
-                                </Heading>
-                            </Center>
+
                             <TableContainer>
                                 <Table size='md'>
                                     <Thead>
@@ -80,8 +77,13 @@ export default function StockList() {
                                                         <Text>{prod.sellPrice}$</Text>
                                                     </Td>
                                                     <Td>
-                                                        <Text>{prod.date}</Text>
+                                                        <Text>{formatDatetime(prod.date)}</Text>
                                                     </Td>
+                                                    <td style={{ textAlign: 'center' }}>
+                                                        <Link href={`stock/${prod.id.toString()}`}>
+                                                            <Button colorScheme='teal'>Editar</Button>
+                                                        </Link>
+                                                    </td>
                                                 </Tr>
                                             ))
                                         }
