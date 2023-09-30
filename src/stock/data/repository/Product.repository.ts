@@ -21,7 +21,7 @@ const ProductRepository = {
         }
     },
 
-    getById: async (id: string) => {
+    getById: async (id: number) => {
         try {
             const res = await fetch(`${BASE_URL}/${id}`, {
                 method: 'GET',
@@ -33,6 +33,22 @@ const ProductRepository = {
             return data;
         } catch (error) {
             console.error('Error en getById:', error);
+            throw error;
+        }
+    },
+
+    getByName: async (id: string) => {
+        try {
+            const res = await fetch(`${BASE_URL}/name/${id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await res.json();
+            return data;
+        } catch (error) {
+            console.error('Error en getByName:', error);
             throw error;
         }
     },

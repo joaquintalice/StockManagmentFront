@@ -1,7 +1,21 @@
-import React from 'react'
+import PageLayout from '@/shared/components/layouts/pageLayout'
+import StockHeader from '@/stock/features/StockHeader'
+import StockUpdate from '@/stock/features/StockUpdate'
+import { Params } from 'next/dist/shared/lib/router/utils/route-matcher'
 
-export default function page() {
+export default function page({ params }: Params) {
+    console.log(params)
+
     return (
-        <div>page</div>
+        <PageLayout>
+            {{
+                header: (
+                    <StockHeader />
+                ),
+                content: (
+                    <StockUpdate id={params.id} />
+                ),
+            }}
+        </PageLayout>
     )
 }

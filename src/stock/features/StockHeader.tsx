@@ -1,12 +1,8 @@
 'use client'
-import { Box, Button, Flex, Heading, Icon } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading } from "@chakra-ui/react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
-import { PiPlantBold } from 'react-icons/pi'
-
-// interface StockHeaderProps {
-//     navigateToCreatePeople: () => void;
-// }
 
 const StockHeader = () => {
     const router = useRouter();
@@ -16,13 +12,15 @@ const StockHeader = () => {
     );
 
     const navigateToSell = useCallback(
-        () => router.push("/stock/sales"),
+        () => router.push("/stock"),
         [router]
     );
 
     return (
         <Flex justify="space-between" wrap='wrap' gap={1}>
-            <Heading justifyContent='center'>Stock</Heading>
+            <Link href='/stock'>
+                <Heading justifyContent='center' as='h1'>Stock</Heading>
+            </Link>
 
             <Box display='flex' gap={2} flexWrap={{ base: 'wrap' }} justifyContent='center' >
                 <Button
@@ -33,13 +31,13 @@ const StockHeader = () => {
                     Crear producto
                 </Button>
 
-                <Button
+                {/* <Button
                     variant="outline"
                     onClick={navigateToSell}
                     colorScheme="teal"
                 >
-                    Vender
-                </Button>
+                    Generar venta
+                </Button> */}
             </Box>
         </Flex>
     );

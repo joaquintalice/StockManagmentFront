@@ -12,6 +12,7 @@ import {
     Spinner,
     Button,
     Link,
+    useDisclosure,
 } from '@chakra-ui/react'
 import ProductRepository from '../data/repository/Product.repository';
 import { useEffect, useState } from 'react';
@@ -20,6 +21,7 @@ import formatDatetime from '../../shared/utils/formatDate';
 
 
 export default function StockList() {
+
     const [data, setData] = useState<Product[] | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -77,7 +79,7 @@ export default function StockList() {
                                                         <Text>{prod.sellPrice}$</Text>
                                                     </Td>
                                                     <Td>
-                                                        <Text>{formatDatetime(prod.date)}</Text>
+                                                        <Text>{formatDatetime(prod.updatedAt)}</Text>
                                                     </Td>
                                                     <td style={{ textAlign: 'center' }}>
                                                         <Link href={`stock/${prod.id.toString()}`}>

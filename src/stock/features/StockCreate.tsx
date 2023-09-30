@@ -17,10 +17,9 @@ export default function StockCreate() {
 
     const { isOpen, onOpen, onClose } = useDisclosure()
     const toast = useToast()
-    const [submitAlert, setSubmitAlert] = useState<boolean>(false);
-    const [errorAlert, setErrorAlert] = useState<boolean>(false);
     const [errorModal, setErrorModal] = useState<boolean>(false);
     const [prodId, setProdId] = useState<number>();
+    const [prodName, setProdName] = useState<string>();
 
     const formik = useFormik({
         initialValues: {
@@ -30,7 +29,7 @@ export default function StockCreate() {
             sellPrice: 0
         },
         onSubmit: (values) => {
-
+            setErrorModal(false)
             async function submitHandler() {
 
                 const data = {
@@ -43,10 +42,11 @@ export default function StockCreate() {
                 const create = await ProductRepository.create(data);
 
                 if (create.statusCode === 409) {
-                    const prodById = await ProductRepository.getById(data.name);
+                    const prodById = await ProductRepository.getByName(data.name);
 
-                    setProdId(prodById.id)
-                    setErrorModal(true)
+                    setProdId(prodById.id);
+                    setProdName(prodById.name);
+                    setErrorModal(true);
                     return;
                 } else {
                     toast({
@@ -58,8 +58,6 @@ export default function StockCreate() {
                         position: 'top-right'
                     })
                 }
-
-                setSubmitAlert(true)
             }
 
             submitHandler()
@@ -80,14 +78,14 @@ export default function StockCreate() {
             <Box as='section' w='100%'>
                 <Center>
                     <Heading as='h1' my='2rem'>
-                        Actualizar stock
+                        Crear nuevo producto
                     </Heading>
                 </Center>
 
                 <Box display='flex' justifyContent='center'>
-                    <form onSubmit={formik.handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '63%' }}>
+                    <form onSubmit={formik.handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '55%' }}>
 
-                        <FormControl>
+                        <FormControl my='0.5rem'>
                             <FormLabel fontSize='18px'>Producto</FormLabel>
                             <Select
                                 name='name'
@@ -103,11 +101,20 @@ export default function StockCreate() {
                                     ))
                                 }
                             </Select>
+
+                            {
+                                (formik.errors.name != undefined) ? (
+                                    <Alert status='error' variant='left-accent' mt='5px'>
+                                        <AlertIcon />
+                                        {formik.errors.name}
+                                    </Alert>
+                                ) : (<></>)
+                            }
                         </FormControl>
 
 
 
-                        <FormControl>
+                        <FormControl my='1rem'>
                             <FormLabel fontSize='18px'>Kilos</FormLabel>
                             <NumberInput>
                                 <NumberInputField
@@ -117,11 +124,20 @@ export default function StockCreate() {
                                     bg='gray.700' fontSize='20px' color='white'
                                 />
                             </NumberInput>
+
+                            {
+                                (formik.errors.quantity != undefined) ? (
+                                    <Alert status='error' variant='left-accent' mt='5px'>
+                                        <AlertIcon />
+                                        {formik.errors.quantity}
+                                    </Alert>
+                                ) : (<></>)
+                            }
                         </FormControl>
 
 
 
-                        <FormControl>
+                        <FormControl my='0.5rem'>
                             <FormLabel fontSize='18px'>Precio compra</FormLabel>
                             <NumberInput>
                                 <NumberInputField
@@ -132,11 +148,20 @@ export default function StockCreate() {
                                     fontSize='20px'
                                     color='white' />
                             </NumberInput>
+
+                            {
+                                (formik.errors.buyPrice != undefined) ? (
+                                    <Alert status='error' variant='left-accent' mt='5px'>
+                                        <AlertIcon />
+                                        {formik.errors.buyPrice}
+                                    </Alert>
+                                ) : (<></>)
+                            }
                         </FormControl>
 
 
 
-                        <FormControl>
+                        <FormControl my='0.5rem'>
                             <FormLabel
                                 fontFamily=''
                                 fontSize='18px'>
@@ -150,6 +175,15 @@ export default function StockCreate() {
                                     fontSize='20px'
                                     color='white' />
                             </NumberInput>
+
+                            {
+                                (formik.errors.sellPrice != undefined) ? (
+                                    <Alert status='error' variant='left-accent' mt='5px'>
+                                        <AlertIcon />
+                                        {formik.errors.sellPrice}
+                                    </Alert>
+                                ) : (<></>)
+                            }
                         </FormControl>
 
 
@@ -172,53 +206,15 @@ export default function StockCreate() {
 
                     </form>
                 </Box>
-
-
-                {
-                    (formik.errors.name != undefined) ? (
-                        <Alert status='error' mt='5px'>
-                            <AlertIcon />
-                            {formik.errors.name}
-                        </Alert>
-                    ) : (<></>)
-                }
-
-                {
-                    (formik.errors.quantity != undefined) ? (
-                        <Alert status='error' mt='5px'>
-                            <AlertIcon />
-                            {formik.errors.quantity}
-                        </Alert>
-                    ) : (<></>)
-                }
-
-                {
-                    (formik.errors.buyPrice != undefined) ? (
-                        <Alert status='error' mt='5px'>
-                            <AlertIcon />
-                            {formik.errors.buyPrice}
-                        </Alert>
-                    ) : (<></>)
-                }
-
-                {
-                    (formik.errors.sellPrice != undefined) ? (
-                        <Alert status='error' mt='5px'>
-                            <AlertIcon />
-                            {formik.errors.sellPrice}
-                        </Alert>
-                    ) : (<></>)
-                }
-
             </Box>
-
 
             {
                 errorModal ? (<>
                     <Modal isOpen={isOpen} onClose={onClose}>
-                        <ModalOverlay />
+                        <ModalOverlay
+                        />
                         <ModalContent>
-                            <ModalHeader>Producto ya existente en stock</ModalHeader>
+                            <ModalHeader>Producto "{prodName}" ya existente en stock</ModalHeader>
                             <ModalCloseButton />
                             <ModalBody>
                                 <Text>
@@ -235,36 +231,11 @@ export default function StockCreate() {
                                     <Button colorScheme='green' >Editar</Button>
                                 </Link>
                             </ModalFooter>
-                        </ModalContent>
-                    </Modal>
+                        </ModalContent >
+                    </Modal >
                 </>) : (<></>)
             }
 
-
-
-            {
-                errorAlert ? (
-                    toast({
-                        title: 'Error al enviar el formulario',
-                        description: 'Ha ocurrido un error',
-                        status: 'error',
-                        duration: 3500,
-                        isClosable: true,
-                        position: 'top-right'
-                    })) : (<></>)
-            }
-            {/* {
-                submitAlert ? (
-                    toast({
-                        title: 'Stock actualizado con éxito',
-                        description: 'Se ha actualizado el stock exitosamente',
-                        status: 'success',
-                        duration: 3500,
-                        isClosable: true,
-                        position: 'top-right'
-                    })
-                ) : (<></>)
-            } */}
         </>
     )
 }
