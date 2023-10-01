@@ -3,4 +3,5 @@ export default interface CreateProduct {
     quantity: number;
     buyPrice: number;
     sellPrice: number;
+    date?: Date;
 }
