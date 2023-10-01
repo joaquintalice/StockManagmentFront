@@ -70,7 +70,7 @@ const ProductRepository = {
             });
 
             const data = await res.json();
-            console.log(data);
+
             return data;
         } catch (error) {
             // Propaga el error original o crea una excepción personalizada
