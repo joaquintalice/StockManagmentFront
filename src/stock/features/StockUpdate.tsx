@@ -1,6 +1,6 @@
 'use client'
 import { productSchema } from '@/stock/schema/product.schema';
-import { Alert, AlertIcon, Box, Button, Center, FormControl, FormLabel, Heading, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, NumberInput, NumberInputField, Select, Text, useDisclosure, useToast } from '@chakra-ui/react';
+import { Alert, AlertIcon, Badge, Box, Button, Center, FormControl, FormLabel, Heading, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, NumberInput, NumberInputField, Select, Table, TableContainer, Tbody, Text, Thead, useDisclosure, useToast } from '@chakra-ui/react';
 import { useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { MdOutlinePostAdd } from 'react-icons/md';
@@ -8,10 +8,13 @@ import ProductRepository from '../data/repository/Product.repository';
 import Product from '../data/interfaces/Product';
 import Link from 'next/link';
 import NotFound from '@/app/not-found';
+import { RobotoFont, scFont } from '@/shared/utils/fonts';
+import Loading from '@/app/loading';
 
 type StockUpdateProp = {
-    id: any;
+    id: number;
 }
+
 
 export default function StockUpdate({ id }: StockUpdateProp) {
 
@@ -25,12 +28,13 @@ export default function StockUpdate({ id }: StockUpdateProp) {
         quantity: 0,
         sellPrice: 0,
         warehouseId: 1,
-        updatedAt: '',
     });
+    const [newData, setNewData] = useState<Partial<Product>>({})
     const [updatedData, setUpdatedData] = useState<Partial<Product>>({});
     const [loader, setLoader] = useState<boolean>(true);
     const [error, setError] = useState<boolean>(false);
     const [confirmModal, setConfirmModal] = useState<boolean>(false);
+
 
 
     const formik = useFormik({
@@ -44,6 +48,7 @@ export default function StockUpdate({ id }: StockUpdateProp) {
         onSubmit: (values) => {
             setConfirmModal(false)
             setUpdatedData({})
+            setNewData(values)
             async function submitHandler() {
                 const prod = prodData
 
@@ -101,7 +106,7 @@ export default function StockUpdate({ id }: StockUpdateProp) {
                 isClosable: true,
                 position: 'top-right'
             })
-            console.log(update)
+
             return update
         } catch (error) {
             console.log('Error en update', error)
@@ -111,12 +116,14 @@ export default function StockUpdate({ id }: StockUpdateProp) {
     return (
         <>
             {
-                loader ? (<>Loading...</>)
+                loader ? (<Loading />)
                     : error ? (<NotFound />) : (
                         <Box as='section' w='100%'>
                             <Center>
                                 <Heading as='h1' my='2rem'>
-                                    Actualizar {prodData.name}
+                                    Actualizar  <Badge fontSize='1em' colorScheme='green'>
+                                        {prodData.name}
+                                    </Badge>
                                 </Heading>
                             </Center>
 
@@ -124,10 +131,19 @@ export default function StockUpdate({ id }: StockUpdateProp) {
                                 <form onSubmit={formik.handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '55%' }}>
 
                                     <FormControl my='1rem'>
-                                        <FormLabel fontSize='18px'>Kilos (Se suma a la cantidad existente)</FormLabel>
+                                        <FormLabel fontSize='19px'>
+                                            Kilos
+                                            <Alert status='info' variant='top-accent' fontSize='14px'>
+                                                <AlertIcon />
+                                                Se sumarán a la cantidad actual, la cual es de:
+                                                <Badge fontSize='1.3em' colorScheme='green'>
+                                                    {prodData.quantity} Kilos
+                                                </Badge>
+                                            </Alert>
+                                        </FormLabel>
                                         <NumberInput>
                                             <NumberInputField
-                                                placeholder={`Cantidad actual: ${prodData.quantity}`}
+                                                placeholder={`Ingresa la cantidad`}
                                                 name="quantity"
                                                 value={formik.values.quantity}
                                                 onChange={formik.handleChange}
@@ -148,10 +164,19 @@ export default function StockUpdate({ id }: StockUpdateProp) {
 
 
                                     <FormControl my='0.5rem'>
-                                        <FormLabel fontSize='18px'>Precio compra (Se reemplaza por el precio anterior)</FormLabel>
+                                        <FormLabel fontSize='19px'>
+                                            Precio compra
+                                            <Alert status='info' variant='top-accent' fontSize='14px'>
+                                                <AlertIcon />
+                                                Se reemplazará por el precio actual, el cual es:
+                                                <Badge fontSize='1.3em' colorScheme='green'>
+                                                    {prodData.buyPrice}$
+                                                </Badge>
+                                            </Alert>
+                                        </FormLabel>
                                         <NumberInput>
                                             <NumberInputField
-                                                placeholder={`Precio de compra actual: ${prodData.buyPrice}`}
+                                                placeholder={`Ingresa el precio de compra`}
                                                 name='buyPrice'
                                                 value={+formik.values.buyPrice}
                                                 onChange={formik.handleChange}
@@ -174,14 +199,19 @@ export default function StockUpdate({ id }: StockUpdateProp) {
 
                                     <FormControl my='0.5rem'>
                                         <FormLabel
-                                            fontFamily=''
-                                            fontSize='18px'>
+                                            fontSize='19px'>
                                             Precio venta
-                                            (Se reemplaza por el precio anterior)
+                                            <Alert status='info' variant='top-accent' fontSize='14px'>
+                                                <AlertIcon />
+                                                Se reemplazará por el precio actual, el cual es:
+                                                <Badge fontSize='1.3em' colorScheme='green'>
+                                                    {prodData.sellPrice}$
+                                                </Badge>
+                                            </Alert>
                                         </FormLabel>
                                         <NumberInput>
                                             <NumberInputField
-                                                placeholder={`Precio de venta actual: ${prodData.sellPrice}`}
+                                                placeholder={`Ingresa el precio de venta`}
                                                 name='sellPrice'
                                                 value={formik.values.sellPrice}
                                                 onChange={formik.handleChange}
@@ -226,16 +256,113 @@ export default function StockUpdate({ id }: StockUpdateProp) {
 
             {
                 confirmModal ? (<>
-                    <Modal isOpen={isOpen} onClose={onClose}>
+                    <Modal
+                        isOpen={isOpen}
+                        onClose={onClose}
+                        isCentered
+                        size='xl'
+                        motionPreset='slideInBottom'>
                         <ModalOverlay />
                         <ModalContent>
-                            <ModalHeader>Actualizar {updatedData.name}</ModalHeader>
+                            <ModalHeader className={RobotoFont.className} textAlign='center'>
+                                Actualizar
+                                <Badge fontSize='1em' colorScheme='green'>
+                                    {updatedData.name}
+                                </Badge>
+                            </ModalHeader>
                             <ModalCloseButton />
                             <ModalBody>
-                                <Text fontSize='20px'>Verifica el resultado final</Text>
-                                <Text>Cantidad: {updatedData.quantity}</Text>
-                                <Text>Precio de compra: {updatedData.buyPrice}</Text>
-                                <Text>Precio de venta: {updatedData.sellPrice}</Text>
+                                <Text fontSize='17px' textAlign='center' className={RobotoFont.className}>Corrobora los cambios</Text>
+                                <TableContainer className={scFont.className} mt='1.2rem'>
+                                    <Table>
+                                        <Thead>
+                                            <tr>
+                                                <th>
+                                                    <Text>
+                                                        Stock
+                                                    </Text>
+                                                </th>
+                                                <th>
+                                                    <Text>
+                                                        Cantidad
+                                                    </Text>
+                                                </th>
+                                                <th>
+                                                    <Text>
+                                                        Precio de compra
+                                                    </Text>
+                                                </th>
+                                                <th>
+                                                    <Text>
+                                                        Precio de venta
+                                                    </Text>
+                                                </th>
+                                            </tr>
+                                        </Thead>
+                                        <Tbody>
+                                            <tr>
+                                                <td>
+                                                    <Text textAlign='center'>Actual</Text>
+                                                </td>
+                                                <td>
+                                                    <Text textAlign='center'>
+                                                        {prodData.quantity}
+                                                    </Text>
+                                                </td>
+                                                <td>
+                                                    <Text textAlign='center'>
+                                                        {prodData.buyPrice}
+                                                    </Text>
+                                                </td>
+                                                <td>
+                                                    <Text textAlign='center'>
+                                                        {prodData.sellPrice}
+                                                    </Text>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <Text textAlign='center'>Ingreso</Text>
+                                                </td>
+                                                <td>
+                                                    <Text textAlign='center'>
+                                                        {newData.quantity}
+                                                    </Text>
+                                                </td>
+                                                <td>
+                                                    <Text textAlign='center'>
+                                                        {newData.buyPrice}
+                                                    </Text>
+                                                </td>
+                                                <td>
+                                                    <Text textAlign='center'>
+                                                        {newData.sellPrice}
+                                                    </Text>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <Text textAlign='center' bg='green.300'>Resultado</Text>
+                                                </td>
+                                                <td>
+                                                    <Text textAlign='center' bg='green.300'>
+                                                        {(updatedData.quantity)?.toFixed(2)}
+                                                    </Text>
+                                                </td>
+                                                <td>
+                                                    <Text textAlign='center' bg='green.300'>
+                                                        {updatedData.buyPrice}
+                                                    </Text>
+                                                </td>
+                                                <td>
+                                                    <Text textAlign='center' bg='green.300'>
+                                                        {updatedData.sellPrice}
+                                                    </Text>
+                                                </td>
+                                            </tr>
+                                        </Tbody>
+                                    </Table>
+                                </TableContainer>
                             </ModalBody>
 
                             <ModalFooter>

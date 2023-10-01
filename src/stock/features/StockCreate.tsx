@@ -1,5 +1,5 @@
 'use client'
-import { Alert, AlertIcon, Text, Box, Button, Center, FormControl, FormLabel, Heading, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, NumberInput, NumberInputField, Select, useDisclosure, useToast } from '@chakra-ui/react'
+import { Alert, AlertIcon, Text, Box, Button, Center, FormControl, FormLabel, Heading, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, NumberInput, NumberInputField, Select, useDisclosure, useToast, TableContainer, Table, Thead, Tbody, Badge } from '@chakra-ui/react'
 import React, { useState } from 'react'
 import { MdOutlinePostAdd } from 'react-icons/md'
 import ProductRepository from '@/stock/data/repository/Product.repository';
@@ -10,16 +10,23 @@ import { useFormik } from 'formik';
 import { productSchema } from '../schema/product.schema';
 
 import Link from 'next/link';
-
+import Product from '../data/interfaces/Product';
+import { RobotoFont, scFont } from '@/shared/utils/fonts';
+import CreateProduct from '../data/interfaces/CreateProduct';
 
 export default function StockCreate() {
 
 
     const { isOpen, onOpen, onClose } = useDisclosure()
     const toast = useToast()
-    const [errorModal, setErrorModal] = useState<boolean>(false);
+    const [updatedProd, setUpdatedProd] = useState<CreateProduct>({});
+    const [confirmModal, setConfirmModal] = useState<boolean>(false);
     const [prodId, setProdId] = useState<number>();
-    const [prodName, setProdName] = useState<string>();
+    const [oldProd, setOldProd] = useState<Product>({})
+    const [newProd, setNewProd] = useState<Partial<Product>>({})
+    const [createModal, setCreateModal] = useState<boolean>(false);
+
+
 
     const formik = useFormik({
         initialValues: {
@@ -29,9 +36,11 @@ export default function StockCreate() {
             sellPrice: 0
         },
         onSubmit: (values) => {
-            setErrorModal(false)
-            async function submitHandler() {
+            setUpdatedProd({})
+            setCreateModal(false)
+            setConfirmModal(false)
 
+            async function submitHandler() {
                 const data = {
                     name: values.name,
                     quantity: values.quantity * 1, // Se convierte de string a numero con el *1
@@ -42,16 +51,26 @@ export default function StockCreate() {
                 const create = await ProductRepository.create(data);
 
                 if (create.statusCode === 409) {
-                    const prodById = await ProductRepository.getByName(data.name);
 
-                    setProdId(prodById.id);
-                    setProdName(prodById.name);
-                    setErrorModal(true);
-                    return;
+                    const prod = await ProductRepository.getByName(data.name);
+
+                    const dataToUpdate = {
+                        name: values.name,
+                        quantity: (prod.quantity * 1) + (values.quantity * 1), // Se convierte de string a numero con el *1
+                        buyPrice: values.buyPrice * 1,
+                        sellPrice: values.sellPrice * 1,
+                    }
+
+                    setNewProd(values)
+                    setOldProd(prod)
+                    setProdId(prod.id)
+                    setUpdatedProd(dataToUpdate)
+                    setConfirmModal(true)
                 } else {
+                    setCreateModal(true)
                     toast({
-                        title: 'Stock actualizado con éxito',
-                        description: 'Se ha actualizado el stock exitosamente',
+                        title: 'Producto creado con éxito',
+                        description: 'Se ha creado el producto exitosamente',
                         status: 'success',
                         duration: 3500,
                         isClosable: true,
@@ -72,6 +91,24 @@ export default function StockCreate() {
             return errors;
         }
     })
+
+    async function updateData() {
+        try {
+            const update = await ProductRepository.update(prodId, updatedProd)
+            toast({
+                title: 'Producto actualizado con éxito',
+                description: 'Se ha actualizado el producto exitosamente',
+                status: 'success',
+                duration: 3500,
+                isClosable: true,
+                position: 'top-right'
+            })
+            onClose()
+            return update
+        } catch (error) {
+            console.log('Error en update', error)
+        }
+    }
 
     return (
         <>
@@ -209,29 +246,177 @@ export default function StockCreate() {
             </Box>
 
             {
-                errorModal ? (<>
-                    <Modal isOpen={isOpen} onClose={onClose}>
-                        <ModalOverlay
-                        />
-                        <ModalContent>
-                            <ModalHeader>Producto "{prodName}" ya existente en stock</ModalHeader>
+                confirmModal ? (<>
+                    <Modal
+                        isOpen={isOpen}
+                        onClose={onClose}
+                        isCentered
+                        size='xl'
+                        motionPreset='slideInBottom'>
+                        <ModalOverlay />
+                        <ModalContent >
+                            <ModalHeader className={RobotoFont.className} textAlign='center'>
+                                El producto
+                                <Badge fontSize='1em' colorScheme='green'>
+                                    {oldProd.name}
+                                </Badge>
+                                ya se encuentra en stock.
+                            </ModalHeader>
                             <ModalCloseButton />
                             <ModalBody>
-                                <Text>
-                                    Este producto ya se encuentra registrado en el stock. <br />
-                                    ¿Deseas modificar el producto existente?
-                                </Text>
+                                <Text fontSize='17px' textAlign='center' className={RobotoFont.className}>¿Deseas actualizarlo?</Text>
+                                <Text fontSize='17px' textAlign='center' className={RobotoFont.className} mt='1rem'>Confirma o cancela la actualización</Text>
+                                <TableContainer className={scFont.className} mt='1.2rem'>
+                                    <Table>
+                                        <Thead>
+                                            <tr>
+                                                <th>
+                                                    <Text>
+                                                        Stock
+                                                    </Text>
+                                                </th>
+                                                <th>
+                                                    <Text>
+                                                        Cantidad
+                                                    </Text>
+                                                </th>
+                                                <th>
+                                                    <Text>
+                                                        Precio de compra
+                                                    </Text>
+                                                </th>
+                                                <th>
+                                                    <Text>
+                                                        Precio de venta
+                                                    </Text>
+                                                </th>
+                                            </tr>
+                                        </Thead>
+                                        <Tbody>
+                                            <tr>
+                                                <td>
+                                                    <Text textAlign='center'>Actual</Text>
+                                                </td>
+                                                <td>
+                                                    <Text textAlign='center'>
+                                                        {oldProd.quantity}
+                                                    </Text>
+                                                </td>
+                                                <td>
+                                                    <Text textAlign='center'>
+                                                        {oldProd.buyPrice}
+                                                    </Text>
+                                                </td>
+                                                <td>
+                                                    <Text textAlign='center'>
+                                                        {oldProd.sellPrice}
+                                                    </Text>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <Text textAlign='center'>Ingreso</Text>
+                                                </td>
+                                                <td>
+                                                    <Text textAlign='center'>
+                                                        {newProd.quantity}
+                                                    </Text>
+                                                </td>
+                                                <td>
+                                                    <Text textAlign='center'>
+                                                        {newProd.buyPrice}
+                                                    </Text>
+                                                </td>
+                                                <td>
+                                                    <Text textAlign='center'>
+                                                        {newProd.sellPrice}
+                                                    </Text>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <Text textAlign='center' bg='green.300'>Resultado</Text>
+                                                </td>
+                                                <td>
+                                                    <Text textAlign='center' bg='green.300'>
+                                                        {updatedProd.quantity}
+                                                    </Text>
+                                                </td>
+                                                <td>
+                                                    <Text textAlign='center' bg='green.300'>
+                                                        {updatedProd.buyPrice}
+                                                    </Text>
+                                                </td>
+                                                <td>
+                                                    <Text textAlign='center' bg='green.300'>
+                                                        {updatedProd.sellPrice}
+                                                    </Text>
+                                                </td>
+                                            </tr>
+                                        </Tbody>
+                                    </Table>
+                                </TableContainer>
                             </ModalBody>
 
                             <ModalFooter>
                                 <Button colorScheme='red' mr={3} onClick={onClose}>
-                                    Cerrar
+                                    Cancelar
                                 </Button>
-                                <Link href={`/stock/${prodId}`}>
-                                    <Button colorScheme='green' >Editar</Button>
+                                <Link href='/stock'>
+                                    <Button colorScheme='green' mr={3} onClick={updateData}>
+                                        Confirmar y salir
+                                    </Button>
                                 </Link>
+                                <Button colorScheme='green' onClick={updateData}>
+                                    Confirmar y mantenerse
+                                </Button>
                             </ModalFooter>
-                        </ModalContent >
+                        </ModalContent>
+                    </Modal >
+                </>) : (<></>)
+            }
+
+            {
+                createModal ? (<>
+                    <Modal
+                        isOpen={isOpen}
+                        onClose={onClose}
+                        isCentered
+                        size='xl'
+                        motionPreset='slideInBottom'>
+                        <ModalOverlay />
+                        <ModalContent >
+                            <ModalHeader className={RobotoFont.className} textAlign='center'>
+                                ¿Deseas crear otro producto?
+                            </ModalHeader>
+                            <ModalCloseButton />
+                            <ModalBody>
+                                <Text>
+                                    Presiona
+                                    <Badge fontSize='1em' colorScheme='green'>
+                                        si
+                                    </Badge> para mantenerte en esta página
+                                </Text>
+                                <Text>
+                                    Presiona <Badge fontSize='1em' colorScheme='red'>
+                                        no
+                                    </Badge> para salir hacia la tabla de stock
+                                </Text>
+
+
+                            </ModalBody>
+
+                            <ModalFooter>
+                                <Link href='/stock'>
+                                    <Button colorScheme='red' mr={3} onClick={onClose}>
+                                        NO
+                                    </Button>
+                                </Link>
+                                <Button colorScheme='green' onClick={onClose}>
+                                    SI
+                                </Button>
+                            </ModalFooter>
+                        </ModalContent>
                     </Modal >
                 </>) : (<></>)
             }
