@@ -387,10 +387,11 @@ export default function StockCreate() {
                         <ModalOverlay />
                         <ModalContent >
                             <ModalHeader className={RobotoFont.className} textAlign='center'>
-                                ¿Deseas crear otro producto?
+                                Producto creado exitosamente
                             </ModalHeader>
                             <ModalCloseButton />
                             <ModalBody>
+                                <Text fontSize='17px' textAlign='center' className={RobotoFont.className} mb='1rem'>¿Deseas crear otro producto?</Text>
                                 <Text>
                                     Presiona
                                     <Badge fontSize='1em' colorScheme='green'>
@@ -412,7 +413,10 @@ export default function StockCreate() {
                                         NO
                                     </Button>
                                 </Link>
-                                <Button colorScheme='green' onClick={onClose}>
+                                <Button colorScheme='green' onClick={() => {
+                                    onClose()
+                                    window.location.reload()
+                                }}>
                                     SI
                                 </Button>
                             </ModalFooter>
