@@ -120,7 +120,7 @@ export default function StockUpdate({ id }: StockUpdateProp) {
                     : error ? (<NotFound />) : (
                         <Box as='section' w='100%'>
                             <Center>
-                                <Heading as='h1' my='2rem'>
+                                <Heading as='h1' my='2rem' display='flex' justifyContent='center' alignItems='center' gap={2}>
                                     Actualizar  <Badge fontSize='1em' colorScheme='green'>
                                         {prodData.name}
                                     </Badge>
@@ -133,7 +133,7 @@ export default function StockUpdate({ id }: StockUpdateProp) {
                                     <FormControl my='1rem'>
                                         <FormLabel fontSize='19px'>
                                             Kilos
-                                            <Alert status='info' variant='top-accent' fontSize='14px'>
+                                            <Alert status='info' variant='top-accent' fontSize='14px' display='flex' alignItems='center' gap={2}>
                                                 <AlertIcon />
                                                 Se sumarán a la cantidad actual, la cual es de:
                                                 <Badge fontSize='1.3em' colorScheme='green'>
@@ -166,7 +166,7 @@ export default function StockUpdate({ id }: StockUpdateProp) {
                                     <FormControl my='0.5rem'>
                                         <FormLabel fontSize='19px'>
                                             Precio compra
-                                            <Alert status='info' variant='top-accent' fontSize='14px'>
+                                            <Alert status='info' variant='top-accent' fontSize='14px' display='flex' alignItems='center' gap={2}>
                                                 <AlertIcon />
                                                 Se reemplazará por el precio actual, el cual es:
                                                 <Badge fontSize='1.3em' colorScheme='green'>
@@ -201,7 +201,7 @@ export default function StockUpdate({ id }: StockUpdateProp) {
                                         <FormLabel
                                             fontSize='19px'>
                                             Precio venta
-                                            <Alert status='info' variant='top-accent' fontSize='14px'>
+                                            <Alert status='info' variant='top-accent' fontSize='14px' display='flex' alignItems='center' gap={2}>
                                                 <AlertIcon />
                                                 Se reemplazará por el precio actual, el cual es:
                                                 <Badge fontSize='1.3em' colorScheme='green'>
@@ -264,7 +264,7 @@ export default function StockUpdate({ id }: StockUpdateProp) {
                         motionPreset='slideInBottom'>
                         <ModalOverlay />
                         <ModalContent>
-                            <ModalHeader className={RobotoFont.className} textAlign='center'>
+                            <ModalHeader className={RobotoFont.className} display='flex' justifyContent='center' alignItems='center' gap={2}>
                                 Actualizar
                                 <Badge fontSize='1em' colorScheme='green'>
                                     {updatedData.name}

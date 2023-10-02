@@ -27,7 +27,7 @@ import { useEffect, useState } from 'react';
 import Product from '../data/interfaces/Product';
 import formatDatetime from '../../shared/utils/formatDate';
 import Loading from '@/app/loading';
-import { RobotoFont } from '@/shared/utils/fonts';
+import { OxygenFont, RobotoFont, RubikFont, scFont } from '@/shared/utils/fonts';
 import { FiTrash2 } from 'react-icons/fi';
 
 
@@ -100,11 +100,11 @@ export default function StockList() {
                                 <Table size='md'>
                                     <Thead>
                                         <Tr>
-                                            <Th>Nombre</Th>
-                                            <Th>Cantidad</Th>
-                                            <Th>Precio de compra</Th>
-                                            <Th>Precio de venta</Th>
-                                            <Th>Último ingreso</Th>
+                                            <Th textAlign='center' className={RubikFont.className} fontSize='0.85rem'>Nombre</Th>
+                                            <Th textAlign='center' className={RubikFont.className} fontSize='0.85rem'>Cantidad</Th>
+                                            <Th textAlign='center' className={RubikFont.className} fontSize='0.85rem'>Precio de compra</Th>
+                                            <Th textAlign='center' className={RubikFont.className} fontSize='0.85rem'>Precio de venta</Th>
+                                            <Th textAlign='center' className={RubikFont.className} fontSize='0.85rem'>Último ingreso</Th>
                                         </Tr>
                                     </Thead>
                                     <Tbody>
@@ -112,23 +112,26 @@ export default function StockList() {
                                             data.map((prod: Product) => (
                                                 <Tr key={prod.id}>
                                                     <Td>
-                                                        <Text>{prod.name}</Text>
+                                                        <Badge fontSize='1em' colorScheme='green'>
+                                                            {prod.name}
+                                                        </Badge>
+                                                        {/* <Text>{prod.name}</Text> */}
                                                     </Td>
                                                     <Td>
-                                                        <Text>{prod.quantity} kilos</Text>
+                                                        <Text className={scFont.className} fontSize='1.2rem' textAlign='center'>{prod.quantity} kilos</Text>
                                                     </Td>
                                                     <Td>
-                                                        <Text>{prod.buyPrice}$</Text>
+                                                        <Text className={scFont.className} fontSize='1.2rem' textAlign='center'>{prod.buyPrice}$</Text>
                                                     </Td>
                                                     <Td>
-                                                        <Text>{prod.sellPrice}$</Text>
+                                                        <Text className={scFont.className} fontSize='1.2rem' textAlign='center'>{prod.sellPrice}$</Text>
                                                     </Td>
                                                     <Td>
-                                                        <Text>{formatDatetime(prod.updatedAt)}</Text>
+                                                        <Text className={scFont.className} fontSize='1.2rem' textAlign='center'>{formatDatetime(prod.updatedAt)}</Text>
                                                     </Td>
                                                     <td style={{ textAlign: 'center' }}>
                                                         <Link href={`stock/${prod.id.toString()}`} mr='2'>
-                                                            <Button colorScheme='teal'>Editar</Button>
+                                                            <Button colorScheme='teal'>Añadir</Button>
                                                         </Link>
                                                         <IconButton
                                                             colorScheme='red'
@@ -158,7 +161,7 @@ export default function StockList() {
                         motionPreset='slideInBottom'>
                         <ModalOverlay />
                         <ModalContent >
-                            <ModalHeader className={RobotoFont.className} textAlign='center'>
+                            <ModalHeader className={RobotoFont.className} textAlign='center' display='flex' justifyContent='center' alignItems='center' gap={2}>
                                 ¿Deseas eliminar el producto <Badge fontSize='1em' colorScheme='green'>
                                     {deleteProdName}
                                 </Badge>?
