@@ -15,7 +15,7 @@ export const RobotoFont = Roboto({
 })
 
 export const RubikFont = Rubik({
-    weight: '900',
+    weight: '800',
     style: ['normal'],
     subsets: ['latin'],
     display: 'swap',
