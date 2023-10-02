@@ -16,19 +16,19 @@ import {
     ModalOverlay,
     ModalContent,
     ModalCloseButton,
-    ModalBody,
     Badge,
     ModalFooter,
     useDisclosure,
     useToast,
+    IconButton,
 } from '@chakra-ui/react'
 import ProductRepository from '../data/repository/Product.repository';
 import { useEffect, useState } from 'react';
 import Product from '../data/interfaces/Product';
 import formatDatetime from '../../shared/utils/formatDate';
 import Loading from '@/app/loading';
-import DeleteModal from '../components/DeleteModal';
 import { RobotoFont } from '@/shared/utils/fonts';
+import { FiTrash2 } from 'react-icons/fi';
 
 
 export default function StockList() {
@@ -130,7 +130,13 @@ export default function StockList() {
                                                         <Link href={`stock/${prod.id.toString()}`} mr='2'>
                                                             <Button colorScheme='teal'>Editar</Button>
                                                         </Link>
-                                                        <Button colorScheme='red' onClick={() => openDeleteModal(prod.id, prod.name)}>x</Button>
+                                                        <IconButton
+                                                            colorScheme='red'
+                                                            variant="outline"
+                                                            aria-label="open menu"
+                                                            icon={<FiTrash2 />}
+                                                            onClick={() => openDeleteModal(prod.id, prod.name)}
+                                                        />
                                                     </td>
                                                 </Tr>
                                             ))
