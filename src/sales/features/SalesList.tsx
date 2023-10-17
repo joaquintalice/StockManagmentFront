@@ -1,144 +1,76 @@
 'use client'
-import Product from '@/stock/data/interfaces/Product'
-import productNames from '@/stock/data/productNames/NameArray'
-import ProductRepository from '@/stock/data/repository/Product.repository'
-import { Alert, AlertIcon, Box, Button, Center, FormControl, FormLabel, Heading, NumberInput, NumberInputField, Select, Stat, StatHelpText, StatLabel, StatNumber, useDisclosure } from '@chakra-ui/react'
-import { useFormik } from 'formik'
+import formatDatetime from '@/shared/utils/formatDate'
+import { Badge, Button, IconButton, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react'
+import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
-import { MdOutlinePostAdd } from 'react-icons/md'
-import { SalesSchema } from '../schema/sales.schema'
-
+import ISales from '../data/interfaces/Sales.interface'
+import { SalesRepository } from '../data/repository/SalesRepository'
 
 export default function SalesList() {
 
-    const { isOpen, onOpen, onClose } = useDisclosure()
-    const [stockListData, setStockListData] = useState<Partial<Product[]>>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(true)
-
-    const formik = useFormik({
-        initialValues: {
-            name: '',
-            quantity: 0,
-        },
-        onSubmit: (values) => {
-            console.log(values)
-            async function submitHandler() {
-
-            }
-
-            submitHandler()
-        },
-        validate: (values) => {
-            const result = SalesSchema.safeParse(values);
-            if (result.success) return;
-            const errors = {}
-            result.error.issues.forEach((error) => {
-                errors[error.path[0]] = error.message;
-            });
-            return errors;
-        },
-    })
+    const [data, setData] = useState<ISales[]>([{}]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<boolean>(true);
 
     useEffect(() => {
-
+        setLoading(false)
+        setError(false)
         async function getData() {
-            const stockData = await ProductRepository.getAll();
-            setStockListData(stockData)
-            console.log(stockData)
-        }
+            try {
+                const data = await SalesRepository.getAll();
+                if (!data) {
+                    setError(true)
+                    return
+                }
+                setData(data)
+                setLoading(false)
 
+            } catch (error) {
+                setLoading(true)
+            }
+        }
         getData()
     }, [])
 
-
-
     return (
         <>
-            <Box as='section' w='100%'>
-                <Center>
-                    <Heading as='h1' my='2rem'>
-                        Generar venta
-                    </Heading>
-                </Center>
 
-                <Box display='flex' justifyContent='center'>
-                    <form onSubmit={formik.handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '55%' }}>
 
-                        <FormControl my='0.5rem'>
-                            <FormLabel fontSize='18px'>Producto</FormLabel>
-                            <Select
-                                name='name'
-                                value={formik.values.name}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                placeholder='Selecciona el producto'
-                                bg='green.300'
-                                fontSize='20px'>
+            {
+                loading ? (<>Cargando...</>) : (
+                    <TableContainer>
+                        <Table size='md'>
+                            <Thead>
+                                <Tr>
+                                    <Th textAlign='center' fontSize='0.85rem'>Fecha</Th>
+                                    <Th textAlign='center' fontSize='0.85rem'>Total</Th>
+                                    <Th textAlign='center' fontSize='0.85rem'>Detalles</Th>
+                                </Tr>
+                            </Thead>
+                            <Tbody>
                                 {
-                                    stockListData.map((item, index) => (
-                                        <option key={index}>{item?.name}</option>
+                                    error ? (<>No hay ventas registradas</>) : data.map((prod: ISales) => (
+                                        <Tr key={prod.id}>
+                                            <Td textAlign='center'>
+                                                <Badge fontSize='1em' colorScheme='green'>
+                                                    <Text fontSize='1.2rem' textAlign='center'>{formatDatetime(prod.date)}</Text>
+                                                </Badge>
+                                            </Td>
+                                            <Td>
+                                                <Text fontSize='1.2rem' textAlign='center'>{prod.total}$</Text>
+                                            </Td>
+                                            <td style={{ textAlign: 'center' }}>
+                                                <Button colorScheme='teal'>Detalles</Button>
+                                            </td>
+                                        </Tr>
                                     ))
                                 }
-                            </Select>
+                            </Tbody>
+                        </Table>
+                    </TableContainer>
+                )
+            }
 
-                            {
-                                (formik.errors.name != undefined) ? (
-                                    <Alert status='error' variant='left-accent' mt='5px'>
-                                        <AlertIcon />
-                                        {formik.errors.name}
-                                    </Alert>
-                                ) : (<></>)
-                            }
-                        </FormControl>
-
-
-
-                        <FormControl my='1rem'>
-                            <FormLabel fontSize='18px'>Kilos</FormLabel>
-                            <NumberInput>
-                                <NumberInputField
-                                    name="quantity"
-                                    value={formik.values.quantity}
-                                    onChange={formik.handleChange}
-                                    bg='gray.700' fontSize='20px' color='white'
-                                />
-                            </NumberInput>
-
-                            {
-                                (formik.errors.quantity != undefined) ? (
-                                    <Alert status='error' variant='left-accent' mt='5px'>
-                                        <AlertIcon />
-                                        {formik.errors.quantity}
-                                    </Alert>
-                                ) : (<></>)
-                            }
-                        </FormControl>
-
-                        <Stat>
-                            <StatLabel>TOTAL</StatLabel>
-                            <StatNumber>$ 0.00</StatNumber>
-                            <StatHelpText></StatHelpText>
-                        </Stat>
-
-                        <Button
-                            my={4}
-                            color='white'
-                            _hover={{
-                                bg: 'green.500',
-                                color: 'white'
-                            }}
-                            bg='green.300'
-                            type='submit'
-                            fontSize='16px'
-                            leftIcon={<MdOutlinePostAdd />}
-                            onClick={onOpen}
-                        >
-                            Confirmar
-                        </Button>
-
-                    </form>
-                </Box>
-            </Box>
         </>
     )
 }

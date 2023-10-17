@@ -21,10 +21,10 @@ import {
     FiMenu,
 } from 'react-icons/fi'
 import { IconType } from 'react-icons'
-import { ReactText } from 'react'
 import Link from 'next/link'
 import { PiPlantBold } from 'react-icons/pi'
 import { MdPointOfSale } from 'react-icons/md'
+import { GiCash } from 'react-icons/gi'
 
 interface LinkItemProps {
     name: string
@@ -35,6 +35,7 @@ const LinkItems: Array<LinkItemProps> = [
     { name: 'Home', icon: FiHome, href: '/' },
     { name: 'Stock', icon: FiClipboard, href: '/stock' },
     { name: 'Ventas', icon: MdPointOfSale, href: '/sales' },
+    { name: 'Caja', icon: GiCash, href: '/cashbox' }
 ]
 
 export default function Navbar({

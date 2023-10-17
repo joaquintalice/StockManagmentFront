@@ -1,5 +1,5 @@
 'use client'
-import { Alert, AlertIcon, Text, Box, Button, Center, FormControl, FormLabel, Heading, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, NumberInput, NumberInputField, Select, useDisclosure, useToast, TableContainer, Table, Thead, Tbody, Badge } from '@chakra-ui/react'
+import { Alert, AlertIcon, Text, Box, Button, Center, FormControl, FormLabel, Heading, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, NumberInput, NumberInputField, Select, useDisclosure, useToast, TableContainer, Table, Thead, Tbody, Badge, AlertTitle, AlertDescription } from '@chakra-ui/react'
 import React, { useState } from 'react'
 import { MdOutlinePostAdd } from 'react-icons/md'
 import ProductRepository from '@/stock/data/repository/Product.repository';
@@ -25,6 +25,7 @@ export default function StockCreate() {
     const [oldProd, setOldProd] = useState<Product>({})
     const [newProd, setNewProd] = useState<Partial<Product>>({})
     const [createModal, setCreateModal] = useState<boolean>(false);
+    const [error, setError] = useState<boolean>(false)
 
 
 
@@ -37,6 +38,7 @@ export default function StockCreate() {
         },
         onSubmit: (values) => {
             setUpdatedProd({})
+            setError(false);
             setCreateModal(false)
             setConfirmModal(false)
 
@@ -49,7 +51,10 @@ export default function StockCreate() {
                 }
 
                 const create = await ProductRepository.create(data);
-
+                if (create.statusCode === 422) {
+                    setError(true);
+                    return;
+                }
                 if (create.statusCode === 409) {
 
                     const prod = await ProductRepository.getByName(data.name);
@@ -112,138 +117,148 @@ export default function StockCreate() {
 
     return (
         <>
-            <Box as='section' w='100%'>
-                <Center>
-                    <Heading as='h1' my='2rem'>
-                        Crear nuevo producto
-                    </Heading>
-                </Center>
+            {
+                error ? (
+                    <Alert status='error'>
+                        <AlertIcon />
+                        <AlertTitle>Error interno.</AlertTitle>
+                        <AlertDescription> La entidad 'warehouse' debe ser creada antes que los productos.</AlertDescription>
+                    </Alert>
+                ) : (
+                    <Box as='section' w='100%'>
+                        <Center>
+                            <Heading as='h1' my='2rem'>
+                                Crear nuevo producto
+                            </Heading>
+                        </Center>
 
-                <Box display='flex' justifyContent='center'>
-                    <form onSubmit={formik.handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '55%' }}>
+                        <Box display='flex' justifyContent='center'>
+                            <form onSubmit={formik.handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '55%' }}>
 
-                        <FormControl my='0.5rem'>
-                            <FormLabel fontSize='18px'>Producto</FormLabel>
-                            <Select
-                                name='name'
-                                value={formik.values.name}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                placeholder='Selecciona el producto'
-                                bg='green.300'
-                                fontSize='20px'>
-                                {
-                                    productNames.map((item, index) => (
-                                        <option key={index}>{item}</option>
-                                    ))
-                                }
-                            </Select>
+                                <FormControl my='0.5rem'>
+                                    <FormLabel fontSize='18px'>Producto</FormLabel>
+                                    <Select
+                                        name='name'
+                                        value={formik.values.name}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        placeholder='Selecciona el producto'
+                                        bg='green.300'
+                                        fontSize='20px'>
+                                        {
+                                            productNames.map((item, index) => (
+                                                <option key={index}>{item}</option>
+                                            ))
+                                        }
+                                    </Select>
 
-                            {
-                                (formik.errors.name != undefined) ? (
-                                    <Alert status='error' variant='left-accent' mt='5px'>
-                                        <AlertIcon />
-                                        {formik.errors.name}
-                                    </Alert>
-                                ) : (<></>)
-                            }
-                        </FormControl>
-
-
-
-                        <FormControl my='1rem'>
-                            <FormLabel fontSize='18px'>Kilos</FormLabel>
-                            <NumberInput>
-                                <NumberInputField
-                                    name="quantity"
-                                    value={formik.values.quantity}
-                                    onChange={formik.handleChange}
-                                    bg='gray.700' fontSize='20px' color='white'
-                                />
-                            </NumberInput>
-
-                            {
-                                (formik.errors.quantity != undefined) ? (
-                                    <Alert status='error' variant='left-accent' mt='5px'>
-                                        <AlertIcon />
-                                        {formik.errors.quantity}
-                                    </Alert>
-                                ) : (<></>)
-                            }
-                        </FormControl>
+                                    {
+                                        (formik.errors.name != undefined) ? (
+                                            <Alert status='error' variant='left-accent' mt='5px'>
+                                                <AlertIcon />
+                                                {formik.errors.name}
+                                            </Alert>
+                                        ) : (<></>)
+                                    }
+                                </FormControl>
 
 
 
-                        <FormControl my='0.5rem'>
-                            <FormLabel fontSize='18px'>Precio compra</FormLabel>
-                            <NumberInput>
-                                <NumberInputField
-                                    name='buyPrice'
-                                    value={+formik.values.buyPrice}
-                                    onChange={formik.handleChange}
-                                    bg='gray.700'
-                                    fontSize='20px'
-                                    color='white' />
-                            </NumberInput>
+                                <FormControl my='1rem'>
+                                    <FormLabel fontSize='18px'>Kilos</FormLabel>
+                                    <NumberInput>
+                                        <NumberInputField
+                                            name="quantity"
+                                            value={formik.values.quantity}
+                                            onChange={formik.handleChange}
+                                            bg='gray.700' fontSize='20px' color='white'
+                                        />
+                                    </NumberInput>
 
-                            {
-                                (formik.errors.buyPrice != undefined) ? (
-                                    <Alert status='error' variant='left-accent' mt='5px'>
-                                        <AlertIcon />
-                                        {formik.errors.buyPrice}
-                                    </Alert>
-                                ) : (<></>)
-                            }
-                        </FormControl>
-
-
-
-                        <FormControl my='0.5rem'>
-                            <FormLabel
-                                fontFamily=''
-                                fontSize='18px'>
-                                Precio venta</FormLabel>
-                            <NumberInput>
-                                <NumberInputField
-                                    name='sellPrice'
-                                    value={formik.values.sellPrice}
-                                    onChange={formik.handleChange}
-                                    bg='gray.700'
-                                    fontSize='20px'
-                                    color='white' />
-                            </NumberInput>
-
-                            {
-                                (formik.errors.sellPrice != undefined) ? (
-                                    <Alert status='error' variant='left-accent' mt='5px'>
-                                        <AlertIcon />
-                                        {formik.errors.sellPrice}
-                                    </Alert>
-                                ) : (<></>)
-                            }
-                        </FormControl>
+                                    {
+                                        (formik.errors.quantity != undefined) ? (
+                                            <Alert status='error' variant='left-accent' mt='5px'>
+                                                <AlertIcon />
+                                                {formik.errors.quantity}
+                                            </Alert>
+                                        ) : (<></>)
+                                    }
+                                </FormControl>
 
 
 
-                        <Button
-                            my={4}
-                            color='white'
-                            _hover={{
-                                bg: 'green.500',
-                                color: 'white'
-                            }}
-                            bg='green.300'
-                            type='submit'
-                            fontSize='16px'
-                            leftIcon={<MdOutlinePostAdd />}
-                            onClick={onOpen}
-                        >
-                            Actualizar
-                        </Button>
+                                <FormControl my='0.5rem'>
+                                    <FormLabel fontSize='18px'>Precio compra</FormLabel>
+                                    <NumberInput>
+                                        <NumberInputField
+                                            name='buyPrice'
+                                            value={+formik.values.buyPrice}
+                                            onChange={formik.handleChange}
+                                            bg='gray.700'
+                                            fontSize='20px'
+                                            color='white' />
+                                    </NumberInput>
 
-                    </form>
-                </Box>
-            </Box>
+                                    {
+                                        (formik.errors.buyPrice != undefined) ? (
+                                            <Alert status='error' variant='left-accent' mt='5px'>
+                                                <AlertIcon />
+                                                {formik.errors.buyPrice}
+                                            </Alert>
+                                        ) : (<></>)
+                                    }
+                                </FormControl>
+
+
+
+                                <FormControl my='0.5rem'>
+                                    <FormLabel
+                                        fontFamily=''
+                                        fontSize='18px'>
+                                        Precio venta</FormLabel>
+                                    <NumberInput>
+                                        <NumberInputField
+                                            name='sellPrice'
+                                            value={formik.values.sellPrice}
+                                            onChange={formik.handleChange}
+                                            bg='gray.700'
+                                            fontSize='20px'
+                                            color='white' />
+                                    </NumberInput>
+
+                                    {
+                                        (formik.errors.sellPrice != undefined) ? (
+                                            <Alert status='error' variant='left-accent' mt='5px'>
+                                                <AlertIcon />
+                                                {formik.errors.sellPrice}
+                                            </Alert>
+                                        ) : (<></>)
+                                    }
+                                </FormControl>
+
+
+
+                                <Button
+                                    my={4}
+                                    color='white'
+                                    _hover={{
+                                        bg: 'green.500',
+                                        color: 'white'
+                                    }}
+                                    bg='green.300'
+                                    type='submit'
+                                    fontSize='16px'
+                                    leftIcon={<MdOutlinePostAdd />}
+                                    onClick={onOpen}
+                                >
+                                    Actualizar
+                                </Button>
+
+                            </form>
+                        </Box>
+                    </Box>
+                )
+            }
 
             {
                 confirmModal ? (<>

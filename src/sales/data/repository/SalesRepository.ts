@@ -31,11 +31,24 @@ export const SalesRepository = {
     },
 
 
-    insert: async (body: ICreateSale) => {
+    insert: async ({ total }: ICreateSale) => {
         try {
+            const res = await fetch(BASE_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    total
+                }),
+            });
 
+            const data = await res.json();
+
+            return data;
         } catch (error) {
-
+            console.error('Error en create, trycatch:', error);
+            throw error;
         }
     },
 

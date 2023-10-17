@@ -11,11 +11,6 @@ const StockHeader = () => {
         [router]
     );
 
-    const navigateToSell = useCallback(
-        () => router.push("/stock"),
-        [router]
-    );
-
     return (
         <Flex justify="space-between" wrap='wrap' gap={1}>
             <Link href='/stock'>
@@ -31,13 +26,6 @@ const StockHeader = () => {
                     Crear producto
                 </Button>
 
-                {/* <Button
-                    variant="outline"
-                    onClick={navigateToSell}
-                    colorScheme="teal"
-                >
-                    Generar venta
-                </Button> */}
             </Box>
         </Flex>
     );
