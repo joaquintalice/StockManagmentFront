@@ -1,7 +1,7 @@
 'use client'
 import Product from '@/stock/data/interfaces/Product'
 import ProductRepository from '@/stock/data/repository/Product.repository'
-import { Alert, AlertIcon, Badge, Box, Button, Center, Flex, FormControl, FormLabel, Heading, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, NumberInput, NumberInputField, Select, Spinner, Stat, StatHelpText, StatLabel, StatNumber, Table, TableContainer, Tbody, Td, Text, Th, Thead, useDisclosure, useToast } from '@chakra-ui/react'
+import { Alert, AlertIcon, Badge, Box, Button, Center, Flex, FormControl, FormLabel, Heading, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, NumberInput, NumberInputField, Select, Spinner, Stat, StatArrow, StatGroup, StatHelpText, StatLabel, StatNumber, Table, TableContainer, Tag, Tbody, Td, Text, Th, Thead, useDisclosure, useToast } from '@chakra-ui/react'
 import { useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { MdOutlinePostAdd } from 'react-icons/md'
@@ -10,6 +10,9 @@ import { RobotoFont, scFont } from '@/shared/utils/fonts'
 import SalesRepository from '../data/repository/SalesRepository'
 import SalesDetailRepository from '../data/repository/SalesDetailRepository'
 import CashboxRepository from '@/cashbox/data/repository/CashboxRepository'
+import { FiTrash2 } from 'react-icons/fi'
+import ICreateSalesDetail from '../data/interfaces/SalesDetail.interface'
+import SalesDetailRepository2 from '../data/repository/SalesDetailRepository2'
 
 
 
@@ -38,7 +41,7 @@ export default function SalesCreate2() {
         onSubmit: (values) => {
 
             console.log(values)
-
+            setConfirmSaleModal(true)
         },
         validate: (values) => {
             setConfirmSaleModal(false)
@@ -85,6 +88,37 @@ export default function SalesCreate2() {
 
         getStockListData()
     }, [])
+
+    const handleChange = (event) => {
+        formik.handleChange(event);
+        const updatedValues = { ...formik.values };
+        const { name, value } = event.target;
+        updatedValues[name] = value;
+        calculateTotal(updatedValues);
+    };
+
+    const handleSubmit = (event) => {
+        formik.handleSubmit(event);
+        calculateTotal(formik.values);
+    };
+
+    const calculateTotal = (values) => {
+        let totalPrice = 0;
+        if (Array.isArray(values)) {
+            values.forEach((producto) => {
+                const productData = stockListData.find(prod => prod?.id === +producto?.name);
+                if (productData) {
+                    totalPrice += productData?.sellPrice * producto.quantity;
+                }
+            });
+        }
+        setTotal(totalPrice);
+    };
+
+    useEffect(() => {
+        calculateTotal(formik.values);
+    }, [formik.values]);
+
     /* 
         useEffect(() => {
             console.log(currentProdID)
@@ -183,7 +217,55 @@ export default function SalesCreate2() {
         }
      */
 
+    async function handleSale() {
+        try {
 
+            setLoadingModal(true)
+
+            await SalesRepository.insert({ total: total });
+            const sale = await SalesRepository.getAll();
+            const stockMovementId = sale[sale.length - 1].id;
+
+
+            const data = formik.values
+            const details: ICreateSalesDetail[] = []
+
+            data.forEach(async prod => {
+                const product = stockListData.find(product => product?.id === +prod.name);
+
+                details.push({
+                    prodId: product?.id,
+                    stockMovementId: stockMovementId,
+                    quantity: +prod.quantity,
+                    buyPrice: product?.buyPrice,
+                    sellPrice: product?.sellPrice
+                });
+
+                await ProductRepository.update(product?.id, {
+                    quantity: (product?.quantity) - (+prod.quantity)
+                });
+            })
+
+            await SalesDetailRepository2.insert(details)
+
+            const cashbox = await CashboxRepository.getById(1);
+            const updatedCashbox = {
+                name: cashbox.name,
+                amount: parseFloat((cashbox.amount + total).toFixed(2))
+            }
+
+            await CashboxRepository.update(1, updatedCashbox);
+
+
+            console.log(data)
+            console.log(details)
+            setLoadingModal(false)
+            onClose();
+            console.log('todo salio bien jeje')
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     return (
         <>
@@ -199,7 +281,7 @@ export default function SalesCreate2() {
 
                             <Box display='flex' justifyContent='center'>
 
-                                <form onSubmit={formik.handleSubmit}>
+                                <form onSubmit={handleSubmit}>
                                     <Flex>
                                         <Table size='lg'>
                                             <Thead>
@@ -223,7 +305,7 @@ export default function SalesCreate2() {
                                                                     <Select
                                                                         name={`[${index}].name`}
                                                                         value={producto.name}
-                                                                        onChange={formik.handleChange}
+                                                                        onChange={handleChange}
                                                                         onBlur={formik.handleBlur}
                                                                         placeholder='Selecciona el producto'
                                                                         bg='green.300'
@@ -237,7 +319,7 @@ export default function SalesCreate2() {
                                                                     {
                                                                         formik.errors[index] && formik.errors[index].name && (
                                                                             <Alert status='error' variant='left-accent' mt='5px'>
-                                                                                <AlertIcon />
+
                                                                                 {formik.errors[index].name}
                                                                             </Alert>
                                                                         )
@@ -248,7 +330,7 @@ export default function SalesCreate2() {
                                                                         <NumberInputField
                                                                             name={`[${index}].quantity`}
                                                                             value={producto.quantity}
-                                                                            onChange={formik.handleChange}
+                                                                            onChange={handleChange}
                                                                             bg='gray.700' fontSize='20px' color='white'
                                                                         />
                                                                     </NumberInput>
@@ -263,31 +345,41 @@ export default function SalesCreate2() {
                                                                 </Td>
                                                                 <Td>
                                                                     {
-                                                                        (stockListData.filter(prod => prod?.id === +producto?.name)).map(prod => (<Text key={prod?.id}>{prod?.sellPrice}</Text>))
+                                                                        stockListData
+                                                                            .filter(prod => prod?.id === +producto?.name)
+                                                                            .map(prod => (
+                                                                                <Text key={prod?.id}>
+                                                                                    ${prod?.sellPrice}
+                                                                                </Text>
+                                                                            ))
                                                                     }
                                                                 </Td>
                                                                 <Td>
                                                                     {
                                                                         stockListData
                                                                             .filter(prod => prod?.id === +producto?.name)
-                                                                            .map(prod => (
-                                                                                <Text key={prod?.id}>
-                                                                                    {
-                                                                                        (prod?.sellPrice * formik.values[index].quantity).toFixed(2)
-                                                                                    }
-                                                                                </Text>
-                                                                            ))
+                                                                            .map(prod => {
+                                                                                const finalPrice = (prod?.sellPrice * formik.values[index].quantity).toFixed(2)
+
+                                                                                return (
+                                                                                    <Text key={prod?.id}>
+                                                                                        ${finalPrice}
+                                                                                    </Text>
+                                                                                )
+                                                                            })
                                                                     }
                                                                 </Td>
                                                                 <Td>
+
                                                                     <Button
                                                                         type="button"
+                                                                        colorScheme='red'
                                                                         onClick={() => {
                                                                             const newValues = formik.values.filter((_, productIndex) => productIndex !== index);
                                                                             formik.setValues(newValues);
                                                                         }}
                                                                     >
-                                                                        Eliminar producto
+                                                                        <FiTrash2 />
                                                                     </Button>
                                                                 </Td>
                                                             </tr>
@@ -298,7 +390,7 @@ export default function SalesCreate2() {
                                         </Table>
                                     </Flex>
 
-                                    <Flex gap={4} my={5}>
+                                    <Flex gap={4} my={10} justifyContent='space-around'>
                                         <Button
                                             colorScheme='teal'
                                             onClick={() => {
@@ -307,7 +399,13 @@ export default function SalesCreate2() {
                                         >
                                             Agregar producto
                                         </Button>
-                                        <Button type='submit' colorScheme='green'>Submit</Button>
+
+                                        <Stat textAlign='center'>
+                                            <StatLabel>Total</StatLabel>
+                                            <StatNumber>${total.toFixed(2)}</StatNumber>
+                                        </Stat>
+
+                                        <Button type='submit' colorScheme='green' onClick={onOpen}>Confirmar venta</Button>
                                     </Flex>
 
                                 </form>
@@ -320,7 +418,7 @@ export default function SalesCreate2() {
                     )
             }
 
-            {/*             {
+            {
                 loadingModal ? (<>
                     <Modal
                         isOpen={isOpen}
@@ -342,12 +440,12 @@ export default function SalesCreate2() {
                             isOpen={isOpen}
                             onClose={onClose}
                             isCentered
-                            size='xl'
+                            size='4xl'
                             motionPreset='slideInBottom'>
                             <ModalOverlay />
                             <ModalContent >
                                 <ModalHeader className={RobotoFont.className} textAlign='center'>
-                                    Confirma la venta de
+                                    Confirma la venta
                                     <Badge fontSize='1em' colorScheme='green'>
                                         {currentProdData.name}
                                     </Badge>
@@ -359,6 +457,11 @@ export default function SalesCreate2() {
                                         <Table>
                                             <Thead>
                                                 <tr>
+                                                    <th>
+                                                        <Text>
+                                                            Producto
+                                                        </Text>
+                                                    </th>
                                                     <th>
                                                         <Text>
                                                             Cantidad
@@ -377,17 +480,66 @@ export default function SalesCreate2() {
                                                 </tr>
                                             </Thead>
                                             <Tbody>
-                                                <tr>
-                                                    <td>
-                                                        <Text textAlign='center'>{formik.values.quantity} Kilos</Text>
-                                                    </td>
-                                                    <td>
-                                                        <Text textAlign='center'>${currentProdData.sellPrice}</Text>
-                                                    </td>
-                                                    <td>
-                                                        <Text textAlign='center'>${total.toFixed(2)}</Text>
-                                                    </td>
-                                                </tr>
+                                                {
+                                                    formik.values.map((producto, index) => (
+                                                        <tr key={index}>
+                                                            <Td textAlign='center' fontSize={18}>
+                                                                {
+                                                                    stockListData
+                                                                        .filter(prod => prod?.id === +producto?.name)
+                                                                        .map(prod => (
+                                                                            <Text key={prod?.id} >
+                                                                                <Tag colorScheme='green' >
+                                                                                    {prod?.name}
+                                                                                </Tag>
+                                                                            </Text>
+                                                                        ))
+                                                                }
+                                                            </Td>
+                                                            <Td textAlign='center'>
+                                                                <Text>
+                                                                    {
+                                                                        formik.values[index].quantity
+                                                                    }
+                                                                </Text>
+                                                            </Td>
+                                                            <Td textAlign='center'>
+                                                                {
+                                                                    stockListData
+                                                                        .filter(prod => prod?.id === +producto?.name)
+                                                                        .map(prod => (
+                                                                            <Text key={prod?.id}>
+                                                                                ${prod?.sellPrice}
+                                                                            </Text>
+                                                                        ))
+                                                                }
+                                                            </Td>
+                                                            <Td textAlign='center'>
+                                                                {
+                                                                    stockListData
+                                                                        .filter(prod => prod?.id === +producto?.name)
+                                                                        .map(prod => {
+                                                                            const finalPrice = (prod?.sellPrice * formik.values[index].quantity).toFixed(2)
+
+                                                                            return (
+                                                                                <Text key={prod?.id}>
+                                                                                    ${finalPrice}
+                                                                                </Text>
+                                                                            )
+                                                                        })
+                                                                }
+                                                            </Td>
+
+                                                        </tr>
+                                                    ))
+                                                }
+                                                {
+                                                    <tr>
+                                                        <Th my={3} fontSize={20}>Total</Th>
+                                                        <Td fontSize={20} fontWeight='bold'>${total.toFixed(2)}</Td>
+                                                    </tr>
+
+                                                }
                                             </Tbody>
                                         </Table>
                                     </TableContainer>
@@ -397,14 +549,14 @@ export default function SalesCreate2() {
                                     <Button colorScheme='red' mr={3} onClick={onClose}>
                                         Cancelar
                                     </Button>
-                                    <Button colorScheme='green' onClick={handleSubmit}>
+                                    <Button colorScheme='green' onClick={handleSale}>
                                         Confirmar
                                     </Button>
                                 </ModalFooter>
                             </ModalContent>
                         </Modal >
                     </>) : (<></>)
-            } */}
+            }
         </>
     )
 }

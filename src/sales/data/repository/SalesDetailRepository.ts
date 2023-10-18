@@ -2,7 +2,7 @@ import ICreateSalesDetail from "../interfaces/SalesDetail.interface";
 
 const BASE_URL = 'http://localhost:3000/stockmovementdetails'
 
-export const SalesDetailRepository2 = {
+export const SalesDetailRepository = {
 
 
     getAll: async () => {
@@ -31,18 +31,25 @@ export const SalesDetailRepository2 = {
     },
 
 
-    insert: async (body: ICreateSalesDetail[]) => {
+    insert: async (body: ICreateSalesDetail) => {
         try {
-            const res = await fetch(`${BASE_URL}/create`, {
+            const { prodId, buyPrice, quantity, sellPrice, stockMovementId } = body
+            const res = await fetch(BASE_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(body),
+                body: JSON.stringify({
+                    prodId,
+                    sellPrice,
+                    buyPrice,
+                    quantity,
+                    stockMovementId
+                }),
             });
-            console.log(body)
+
             const data = await res.json();
-            console.log(data)
+
             return data;
         } catch (error) {
             console.error('Error en create, trycatch:', error);
@@ -71,4 +78,4 @@ export const SalesDetailRepository2 = {
 
 }
 
-export default SalesDetailRepository2
+export default SalesDetailRepository
