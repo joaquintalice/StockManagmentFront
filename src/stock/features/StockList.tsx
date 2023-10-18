@@ -118,13 +118,13 @@ export default function StockList() {
                                                         {/* <Text>{prod.name}</Text> */}
                                                     </Td>
                                                     <Td>
-                                                        <Text className={scFont.className} fontSize='1.2rem' textAlign='center'>{prod.quantity} kilos</Text>
+                                                        <Text className={scFont.className} fontSize='1.2rem' textAlign='center'>{prod.quantity.toFixed(2)} kilos</Text>
                                                     </Td>
                                                     <Td>
-                                                        <Text className={scFont.className} fontSize='1.2rem' textAlign='center'>{prod.buyPrice}$</Text>
+                                                        <Text className={scFont.className} fontSize='1.2rem' textAlign='center'>${prod.buyPrice}</Text>
                                                     </Td>
                                                     <Td>
-                                                        <Text className={scFont.className} fontSize='1.2rem' textAlign='center'>{prod.sellPrice}$</Text>
+                                                        <Text className={scFont.className} fontSize='1.2rem' textAlign='center'>${prod.sellPrice}</Text>
                                                     </Td>
                                                     <Td>
                                                         <Text className={scFont.className} fontSize='1.2rem' textAlign='center'>{formatDatetime(prod.updatedAt)}</Text>

@@ -64,9 +64,17 @@ export const SalesRepository = {
 
     delete: async (id: number) => {
         try {
-
+            const res = await fetch(`${BASE_URL}/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await res.json();
+            return data;
         } catch (error) {
-
+            console.error('Error en delete:', error);
+            throw error;
         }
     },
 

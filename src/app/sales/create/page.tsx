@@ -1,4 +1,4 @@
-import SalesCreate2 from '@/sales/features/SalesCreate2'
+import SalesCreate from '@/sales/features/SalesCreate'
 import SalesHeader from '@/sales/features/SalesHeader'
 import PageLayout from '@/shared/components/layouts/pageLayout'
 import React from 'react'
@@ -10,7 +10,7 @@ export default function SalesPage() {
                 header: (
                     <SalesHeader />
                 ),
-                content: <SalesCreate2 />,
+                content: <SalesCreate />,
             }}
         </PageLayout>
     )

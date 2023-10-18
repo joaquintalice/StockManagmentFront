@@ -1,5 +1,5 @@
 export default interface ICreateSalesDetail {
-    prodId: number
+    prodName: string
     stockMovementId: number
     quantity: number
     buyPrice: number
