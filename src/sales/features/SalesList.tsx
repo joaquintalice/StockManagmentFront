@@ -1,15 +1,11 @@
 'use client'
 import formatDatetime from '@/shared/utils/formatDate'
-import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Badge, Box, Button, Heading, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Table, TableContainer, Tag, Tbody, Td, Text, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react'
-import Link from 'next/link'
+import { Badge, Button, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Table, TableContainer, Tag, Tbody, Td, Text, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import ISales from '../data/interfaces/Sales.interface'
 import { SalesRepository } from '../data/repository/SalesRepository'
 import { RobotoFont, scFont } from '@/shared/utils/fonts'
-import SalesDetailList from './SalesDetailList'
-import { FiTrash2 } from 'react-icons/fi'
 import ICreateSalesDetail from '../data/interfaces/SalesDetail.interface'
-import ICreateSale from '../data/interfaces/CreateSale.interface'
 
 export default function SalesList() {
 
@@ -100,14 +96,17 @@ export default function SalesList() {
                     motionPreset='slideInBottom'>
                     <ModalOverlay />
                     <ModalContent >
-                        <ModalHeader className={RobotoFont.className} textAlign='center'>
-                            Detalles, venta del {
-                                formatDatetime(currentSale.date)
-                            }
+                        <ModalHeader className={RobotoFont.className} textAlign='center' display='flex' justifyContent='center' alignItems='center' gap={3}>
+                            Detalles de la venta registrada en la fecha:
+                            <Tag colorScheme='green' fontSize={27}>
+                                {
+                                    formatDatetime(currentSale.date)
+                                }
+                            </Tag>
                         </ModalHeader>
                         <ModalCloseButton />
                         <ModalBody>
-                            <TableContainer className={scFont.className} mt='1.2rem'>
+                            <TableContainer className={scFont.className} mt='1.2rem' fontSize={20}>
                                 <Table>
                                     <Thead>
                                         <tr>
@@ -139,7 +138,7 @@ export default function SalesList() {
                                             (
                                                 <tr key={index + 20}>
                                                     <Td textAlign='center' fontSize={18}>
-                                                        <Tag colorScheme='green'>
+                                                        <Tag colorScheme='green' fontSize={17}>
                                                             {
                                                                 producto.prodName
                                                             }
