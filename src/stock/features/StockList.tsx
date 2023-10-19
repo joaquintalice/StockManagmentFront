@@ -95,7 +95,6 @@ export default function StockList() {
                 loading ? (<Loading />) :
                     data ? (
                         <>
-
                             <TableContainer>
                                 <Table size='md'>
                                     <Thead>
@@ -115,10 +114,9 @@ export default function StockList() {
                                                         <Badge fontSize='1em' colorScheme='green'>
                                                             {prod.name}
                                                         </Badge>
-                                                        {/* <Text>{prod.name}</Text> */}
                                                     </Td>
                                                     <Td>
-                                                        <Text className={scFont.className} fontSize='1.2rem' textAlign='center'>{prod.quantity.toFixed(2)} kilos</Text>
+                                                        <Text className={scFont.className} fontSize='1.2rem' textAlign='center'>{prod.quantity.toFixed(2)} {prod.unit}</Text>
                                                     </Td>
                                                     <Td>
                                                         <Text className={scFont.className} fontSize='1.2rem' textAlign='center'>${prod.buyPrice}</Text>

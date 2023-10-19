@@ -23,6 +23,7 @@ export default function StockUpdate({ id }: StockUpdateProp) {
     const [prodData, setProdData] = useState<Product>({
         buyPrice: 0,
         date: '',
+        unit: '',
         id: id,
         name: '',
         quantity: 0,
@@ -41,6 +42,7 @@ export default function StockUpdate({ id }: StockUpdateProp) {
         enableReinitialize: true,
         initialValues: {
             name: prodData.name,
+            unit: prodData.unit,
             quantity: 0,
             buyPrice: 0,
             sellPrice: 0
@@ -54,6 +56,7 @@ export default function StockUpdate({ id }: StockUpdateProp) {
 
                 const data = {
                     name: values.name,
+                    unit: values.unit,
                     quantity: (prod.quantity * 1) + (values.quantity * 1), // Se convierte de string a numero con el *1
                     buyPrice: values.buyPrice * 1,
                     sellPrice: values.sellPrice * 1,

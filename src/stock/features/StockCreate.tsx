@@ -1,5 +1,5 @@
 'use client'
-import { Alert, AlertIcon, Text, Box, Button, Center, FormControl, FormLabel, Heading, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, NumberInput, NumberInputField, Select, useDisclosure, useToast, TableContainer, Table, Thead, Tbody, Badge, AlertTitle, AlertDescription } from '@chakra-ui/react'
+import { Alert, AlertIcon, Text, Box, Button, Center, FormControl, FormLabel, Heading, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, NumberInput, NumberInputField, Select, useDisclosure, useToast, TableContainer, Table, Thead, Tbody, Badge, AlertTitle, AlertDescription, Input } from '@chakra-ui/react'
 import React, { useState } from 'react'
 import { MdOutlinePostAdd } from 'react-icons/md'
 import ProductRepository from '@/stock/data/repository/Product.repository';
@@ -13,6 +13,9 @@ import Link from 'next/link';
 import Product from '../data/interfaces/Product';
 import { RobotoFont, scFont } from '@/shared/utils/fonts';
 import CreateProduct from '../data/interfaces/CreateProduct';
+import Units from '../data/productNames/UnitsArray';
+import Loading from '@/app/loading';
+import { useEffect } from 'react';
 
 export default function StockCreate() {
 
@@ -25,6 +28,8 @@ export default function StockCreate() {
     const [oldProd, setOldProd] = useState<Product>({})
     const [newProd, setNewProd] = useState<Partial<Product>>({})
     const [createModal, setCreateModal] = useState<boolean>(false);
+
+    const [loading, setLoading] = useState<boolean>(true)
     const [error, setError] = useState<boolean>(false)
 
 
@@ -33,6 +38,7 @@ export default function StockCreate() {
         initialValues: {
             name: '',
             quantity: 0,
+            unit: '',
             buyPrice: 0,
             sellPrice: 0
         },
@@ -43,14 +49,22 @@ export default function StockCreate() {
             setConfirmModal(false)
 
             async function submitHandler() {
+                const dinamicQuantity = values.unit === 'DOC' ? +values.quantity * 12 : +values.quantity
+                const dinamicUnit = values.unit === 'DOC' ? 'Unidades' : values.unit
+
+                console.log(dinamicQuantity)
+                console.log(dinamicUnit)
+
                 const data = {
                     name: values.name,
-                    quantity: values.quantity * 1, // Se convierte de string a numero con el *1
+                    unit: dinamicUnit,
+                    quantity: dinamicQuantity * 1, // Se convierte de string a numero con el *1
                     buyPrice: values.buyPrice * 1,
                     sellPrice: values.sellPrice * 1
                 }
 
                 const create = await ProductRepository.create(data);
+
                 if (create.statusCode === 422) {
                     setError(true);
                     return;
@@ -61,7 +75,8 @@ export default function StockCreate() {
 
                     const dataToUpdate = {
                         name: values.name,
-                        quantity: (prod.quantity * 1) + (values.quantity * 1), // Se convierte de string a numero con el *1
+                        unit: dinamicUnit,
+                        quantity: (prod.quantity * 1) + (dinamicQuantity * 1), // Se convierte de string a numero con el *1
                         buyPrice: values.buyPrice * 1,
                         sellPrice: values.sellPrice * 1,
                     }
@@ -115,10 +130,14 @@ export default function StockCreate() {
         }
     }
 
+    useEffect(() => {
+        setLoading(false)
+    }, [])
+
     return (
         <>
             {
-                error ? (
+                loading ? (<Loading />) : error ? (
                     <Alert status='error'>
                         <AlertIcon />
                         <AlertTitle>Error interno.</AlertTitle>
@@ -163,27 +182,56 @@ export default function StockCreate() {
                                 </FormControl>
 
 
+                                <Box display={{ base: 'flex' }} flexDirection={{ base: 'column', lg: 'row' }} gap={2} w='100%'>
+                                    <FormControl my='1rem'>
+                                        <FormLabel fontSize='18px'>Cantidad</FormLabel>
+                                        <NumberInput>
+                                            <NumberInputField
+                                                name="quantity"
+                                                value={formik.values.quantity}
+                                                onChange={formik.handleChange}
+                                                bg='gray.700' fontSize='20px' color='white'
+                                            />
+                                        </NumberInput>
 
-                                <FormControl my='1rem'>
-                                    <FormLabel fontSize='18px'>Kilos</FormLabel>
-                                    <NumberInput>
-                                        <NumberInputField
-                                            name="quantity"
-                                            value={formik.values.quantity}
+                                        {
+                                            (formik.errors.quantity != undefined) ? (
+                                                <Alert status='error' variant='left-accent' mt='5px'>
+                                                    <AlertIcon />
+                                                    {formik.errors.quantity}
+                                                </Alert>
+                                            ) : (<></>)
+                                        }
+                                    </FormControl>
+
+
+                                    <FormControl my='1rem'>
+                                        <FormLabel fontSize='18px'>Unidad</FormLabel>
+                                        <Select
+                                            name='unit'
+                                            value={formik.values.unit}
                                             onChange={formik.handleChange}
-                                            bg='gray.700' fontSize='20px' color='white'
-                                        />
-                                    </NumberInput>
+                                            onBlur={formik.handleBlur}
+                                            placeholder='Selecciona la unidad'
+                                            bg='green.300'
+                                            fontSize='20px'>
+                                            {
+                                                Units.map((item, index) => (
+                                                    <option key={index}>{item}</option>
+                                                ))
+                                            }
+                                        </Select>
+                                        {
+                                            (formik.errors.unit != undefined) ? (
+                                                <Alert status='error' variant='left-accent' mt='5px'>
+                                                    <AlertIcon />
+                                                    {formik.errors.unit}
+                                                </Alert>
+                                            ) : (<></>)
+                                        }
+                                    </FormControl>
+                                </Box>
 
-                                    {
-                                        (formik.errors.quantity != undefined) ? (
-                                            <Alert status='error' variant='left-accent' mt='5px'>
-                                                <AlertIcon />
-                                                {formik.errors.quantity}
-                                            </Alert>
-                                        ) : (<></>)
-                                    }
-                                </FormControl>
 
 
 

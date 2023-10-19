@@ -55,7 +55,7 @@ const ProductRepository = {
 
     create: async (createProductData: CreateProduct) => {
         try {
-            const { name, quantity, buyPrice, sellPrice } = createProductData;
+            const { name, quantity, buyPrice, sellPrice, unit } = createProductData;
             const res = await fetch(BASE_URL, {
                 method: 'POST',
                 headers: {
@@ -63,6 +63,7 @@ const ProductRepository = {
                 },
                 body: JSON.stringify({
                     name,
+                    unit,
                     quantity,
                     buyPrice,
                     sellPrice,
