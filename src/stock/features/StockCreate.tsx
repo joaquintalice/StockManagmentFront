@@ -49,8 +49,8 @@ export default function StockCreate() {
             setConfirmModal(false)
 
             async function submitHandler() {
-                const dinamicQuantity = values.unit === 'DOC' ? +values.quantity * 12 : +values.quantity
-                const dinamicUnit = values.unit === 'DOC' ? 'Unidades' : values.unit
+                const dinamicQuantity = values.unit === '(Docena)' ? +values.quantity * 12 : +values.quantity
+                const dinamicUnit = values.unit === '(Docena)' ? '(Unidad)' : values.unit
 
                 console.log(dinamicQuantity)
                 console.log(dinamicUnit)
@@ -156,7 +156,7 @@ export default function StockCreate() {
 
                                 <FormControl my='0.5rem'>
                                     <FormLabel fontSize='18px'>Producto</FormLabel>
-                                    <Select
+                                    {/* <Select
                                         name='name'
                                         value={formik.values.name}
                                         onChange={formik.handleChange}
@@ -169,7 +169,18 @@ export default function StockCreate() {
                                                 <option key={index}>{item}</option>
                                             ))
                                         }
-                                    </Select>
+                                    </Select> */}
+
+                                    <Input name='name'
+                                        value={formik.values.name}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        placeholder='Selecciona el producto'
+                                        bg='gray.700'
+                                        color='white'
+                                        fontSize='20px'>
+                                    </Input>
+
 
                                     {
                                         (formik.errors.name != undefined) ? (
@@ -183,8 +194,47 @@ export default function StockCreate() {
 
 
                                 <Box display={{ base: 'flex' }} flexDirection={{ base: 'column', lg: 'row' }} gap={2} w='100%'>
+
                                     <FormControl my='1rem'>
-                                        <FormLabel fontSize='18px'>Cantidad</FormLabel>
+                                        <FormLabel fontSize='18px'>
+                                            Unidad
+                                            <Alert status='info' variant='top-accent' fontSize='14px' display='flex' alignItems='center' gap={2}>
+                                                <AlertIcon />
+                                                Selecciona la unidad mediante la que será vendido el producto
+                                            </Alert>
+                                        </FormLabel>
+                                        <Select
+                                            name='unit'
+                                            value={formik.values.unit}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            placeholder='Selecciona la unidad'
+                                            bg='green.300'
+                                            fontSize='20px'>
+                                            {
+                                                Units.map((item, index) => (
+                                                    <option key={index}>{item}</option>
+                                                ))
+                                            }
+                                        </Select>
+
+                                        {
+                                            (formik.errors.unit != undefined) ? (
+                                                <Alert status='error' variant='left-accent' mt='5px'>
+                                                    <AlertIcon />
+                                                    {formik.errors.unit}
+                                                </Alert>
+                                            ) : (<></>)
+                                        }
+                                    </FormControl>
+
+                                    <FormControl my='1rem'>
+                                        <FormLabel fontSize='18px'>Cantidad
+                                            <Alert status='info' variant='top-accent' fontSize='14px' display='flex' alignItems='center' gap={2}>
+                                                <AlertIcon />
+                                                Selecciona la unidad mediante la que será vendido el producto
+                                            </Alert>
+                                        </FormLabel>
                                         <NumberInput>
                                             <NumberInputField
                                                 name="quantity"
@@ -204,32 +254,6 @@ export default function StockCreate() {
                                         }
                                     </FormControl>
 
-
-                                    <FormControl my='1rem'>
-                                        <FormLabel fontSize='18px'>Unidad</FormLabel>
-                                        <Select
-                                            name='unit'
-                                            value={formik.values.unit}
-                                            onChange={formik.handleChange}
-                                            onBlur={formik.handleBlur}
-                                            placeholder='Selecciona la unidad'
-                                            bg='green.300'
-                                            fontSize='20px'>
-                                            {
-                                                Units.map((item, index) => (
-                                                    <option key={index}>{item}</option>
-                                                ))
-                                            }
-                                        </Select>
-                                        {
-                                            (formik.errors.unit != undefined) ? (
-                                                <Alert status='error' variant='left-accent' mt='5px'>
-                                                    <AlertIcon />
-                                                    {formik.errors.unit}
-                                                </Alert>
-                                            ) : (<></>)
-                                        }
-                                    </FormControl>
                                 </Box>
 
 
@@ -299,7 +323,7 @@ export default function StockCreate() {
                                     leftIcon={<MdOutlinePostAdd />}
                                     onClick={onOpen}
                                 >
-                                    Actualizar
+                                    Crear
                                 </Button>
 
                             </form>

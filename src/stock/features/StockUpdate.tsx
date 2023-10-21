@@ -135,12 +135,12 @@ export default function StockUpdate({ id }: StockUpdateProp) {
 
                                     <FormControl my='1rem'>
                                         <FormLabel fontSize='19px'>
-                                            Kilos
+                                            Cantidad
                                             <Alert status='info' variant='top-accent' fontSize='14px' display='flex' alignItems='center' gap={2}>
                                                 <AlertIcon />
                                                 Se sumarán a la cantidad actual, la cual es de:
                                                 <Badge fontSize='1.3em' colorScheme='green'>
-                                                    {prodData.quantity} Kilos
+                                                    {prodData.quantity} {prodData.unit}
                                                 </Badge>
                                             </Alert>
                                         </FormLabel>
