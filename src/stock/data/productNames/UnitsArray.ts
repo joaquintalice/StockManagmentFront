@@ -1,3 +1,3 @@
-const Units = ['DOC', 'KG', 'CAB', 'Unidades']
+const Units = ['(Docena)', '(KG)', '(Unidad)']
 
 export default Units
