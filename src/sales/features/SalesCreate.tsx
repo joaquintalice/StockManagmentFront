@@ -4,7 +4,7 @@ import ProductRepository from '@/stock/data/repository/Product.repository'
 import { Alert, AlertIcon, Badge, Box, Button, Center, Flex, Heading, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, NumberInput, NumberInputField, Select, Spinner, Stat, StatLabel, StatNumber, Table, TableContainer, Tag, Tbody, Td, Text, Th, Thead, useDisclosure, useToast } from '@chakra-ui/react'
 import { useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { SalesSchema2 } from '../schema/sales2.schema'
+import { SalesSchema } from '../schema/sales.schema'
 import { RobotoFont, scFont } from '@/shared/utils/fonts'
 import SalesRepository from '../data/repository/SalesRepository'
 import CashboxRepository from '@/cashbox/data/repository/CashboxRepository'
@@ -12,6 +12,7 @@ import { FiTrash2 } from 'react-icons/fi'
 import ICreateSalesDetail from '../data/interfaces/SalesDetail.interface'
 import SalesDetailRepository from '../data/repository/SalesDetailRepository'
 import { MdAdd } from 'react-icons/md'
+import Link from 'next/link'
 
 
 
@@ -27,7 +28,7 @@ export default function SalesCreate2() {
 
     const [loadingModal, setLoadingModal] = useState<boolean>(false);
     const [confirmSaleModal, setConfirmSaleModal] = useState<boolean>(false);
-
+    const [saleFinishedModal, setSaleFinishedModal] = useState<boolean>(false);
 
     const [products, setProducts] = useState([{ name: '', quantity: 0 }]);
 
@@ -40,7 +41,7 @@ export default function SalesCreate2() {
         },
         validate: (values) => {
             setConfirmSaleModal(false)
-            const result = SalesSchema2.safeParse(values);
+            const result = SalesSchema.safeParse(values);
 
             if (result.success) {
                 if (result.data.length < 1) {
@@ -73,13 +74,15 @@ export default function SalesCreate2() {
     })
 
     useEffect(() => {
+        setError(false)
         async function getStockListData() {
             try {
                 const stockData = await ProductRepository.getAll();
                 setLoading(false)
                 setStockListData(stockData)
             } catch (error) {
-                console.log(error)
+                setLoading(false)
+                setError(true)
             }
         }
 
@@ -125,6 +128,7 @@ export default function SalesCreate2() {
             const sale = await SalesRepository.getAll();
             const stockMovementId = sale[sale.length - 1].id;
 
+            console.log(sale)
 
             const data = formik.values
             const details: ICreateSalesDetail[] = []
@@ -135,6 +139,7 @@ export default function SalesCreate2() {
                 details.push({
                     prodName: product?.name,
                     stockMovementId: stockMovementId,
+                    unit: product?.unit,
                     quantity: +prod.quantity,
                     buyPrice: product?.buyPrice,
                     sellPrice: product?.sellPrice
@@ -166,88 +171,286 @@ export default function SalesCreate2() {
                 isClosable: true,
             });
 
-            setTimeout(() => {
-                location.reload()
-            }, 1000);
+
         } catch (error) {
             console.log(error)
+            setError(true)
         }
     }
 
     return (
         <>
             {
-                loading ? (<>Cargando...</>) :
-                    (
-                        <Box as='section' w='100%'>
-                            <Center>
-                                <Heading as='h1' my='2rem'>
-                                    Generar venta
-                                </Heading>
-                            </Center>
+                loading ?
+                    (<>Cargando...</>)
+                    :
+                    error ?
+                        (<>No hay suficientes datos para realizar una venta</>)
+                        :
+                        (
+                            <Box as='section' w='100%'>
+                                <Center>
+                                    <Heading as='h1' my='2rem'>
+                                        Generar venta
+                                    </Heading>
+                                </Center>
 
-                            <Box display='flex' justifyContent='center'>
+                                <Box display='flex' justifyContent='center'>
 
-                                <form onSubmit={handleSubmit}>
-                                    <Flex>
+                                    <form onSubmit={handleSubmit}>
+                                        <Flex>
+                                            <Table size='lg'>
+                                                <Thead>
+                                                    <tr>
+                                                        <Th>Nombre</Th>
+                                                        <Th>Cantidad</Th>
+                                                        <Th>Precio</Th>
+                                                        <Th>Precio final</Th>
+                                                        <Th></Th>
+                                                    </tr>
+                                                </Thead>
+                                                <Tbody>
+                                                    {
+                                                        error ? (
+                                                            <tr>
+                                                                <Td my={5}>No hay productos</Td>
+                                                            </tr>) :
+                                                            formik.values.map((producto, index) => (
+                                                                <tr key={index}>
+                                                                    <Td>
+                                                                        <Select
+                                                                            name={`[${index}].name`}
+                                                                            value={producto.name}
+                                                                            onChange={handleChange}
+                                                                            onBlur={formik.handleBlur}
+                                                                            placeholder='Selecciona el producto'
+                                                                            bg='green.300'
+                                                                            fontSize='20px'>
+                                                                            {
+                                                                                stockListData.map((item) => (
+                                                                                    <option key={item?.id} value={item?.id}>{item?.name}</option>
+                                                                                ))
+                                                                            }
+                                                                        </Select>
+                                                                        {
+                                                                            formik.errors[index] && formik.errors[index].name && (
+                                                                                <Alert status='error' variant='left-accent' mt='5px'>
+                                                                                    <AlertIcon />
+                                                                                    {formik.errors[index].name}
+                                                                                </Alert>
+                                                                            )
+                                                                        }
+                                                                    </Td>
+                                                                    <Td>
+                                                                        {
+                                                                            formik.values[index].name ? (
+                                                                                <Alert status='info' variant='top-accent' fontSize='14px' display='flex' alignItems='center' gap={2}>
+                                                                                    <AlertIcon />
+                                                                                    Stock actual:
+                                                                                    <Badge fontSize='1.3em' colorScheme='green'>
+                                                                                        {
+                                                                                            stockListData
+                                                                                                .filter(prod => prod?.id === +producto?.name)
+                                                                                                .map(prod => (
+                                                                                                    <Text key={prod?.id}>
+                                                                                                        {prod?.quantity} {prod?.unit}
+                                                                                                    </Text>
+
+                                                                                                ))}
+                                                                                    </Badge>
+                                                                                </Alert>
+                                                                            ) : (<></>)
+                                                                        }
+                                                                        <NumberInput>
+                                                                            <NumberInputField
+                                                                                name={`[${index}].quantity`}
+                                                                                value={producto.quantity}
+                                                                                onChange={handleChange}
+                                                                                bg='gray.700' fontSize='20px' color='white'
+                                                                            />
+                                                                        </NumberInput>
+                                                                        {
+                                                                            formik.errors[index] && formik.errors[index].quantity && (
+                                                                                <Alert status='error' variant='left-accent' mt='5px'>
+                                                                                    <AlertIcon />
+                                                                                    {formik.errors[index].quantity}
+                                                                                </Alert>
+                                                                            )
+                                                                        }
+                                                                    </Td>
+                                                                    <Td textAlign='center'>
+                                                                        {
+                                                                            stockListData
+                                                                                .filter(prod => prod?.id === +producto?.name)
+                                                                                .map(prod => (
+                                                                                    <Text key={prod?.id}>
+                                                                                        ${prod?.sellPrice}
+                                                                                    </Text>
+                                                                                ))
+                                                                        }
+                                                                    </Td>
+                                                                    <Td textAlign='center'>
+                                                                        {
+                                                                            stockListData
+                                                                                .filter(prod => prod?.id === +producto?.name)
+                                                                                .map(prod => {
+                                                                                    const finalPrice = (prod?.sellPrice * formik.values[index].quantity).toFixed(2)
+
+                                                                                    return (
+                                                                                        <Text key={prod?.id}>
+                                                                                            ${finalPrice}
+                                                                                        </Text>
+                                                                                    )
+                                                                                })
+                                                                        }
+                                                                    </Td>
+                                                                    <Td textAlign='center'>
+
+                                                                        <Button
+                                                                            type="button"
+                                                                            colorScheme='red'
+                                                                            onClick={() => {
+                                                                                const newValues = formik.values.filter((_, productIndex) => productIndex !== index);
+                                                                                formik.setValues(newValues);
+                                                                            }}
+                                                                        >
+                                                                            <FiTrash2 />
+                                                                        </Button>
+                                                                    </Td>
+                                                                </tr>
+                                                            ))
+                                                    }
+
+                                                </Tbody>
+                                            </Table>
+                                        </Flex>
+
                                         <Table size='lg'>
-                                            <Thead>
-                                                <tr>
-                                                    <Th>Nombre</Th>
-                                                    <Th>Cantidad</Th>
-                                                    <Th>Precio por kilo</Th>
-                                                    <Th>Precio final</Th>
-                                                    <Th></Th>
-                                                </tr>
-                                            </Thead>
                                             <Tbody>
-                                                {
-                                                    error ? (
-                                                        <tr>
-                                                            <Td my={5}>No hay productos</Td>
-                                                        </tr>) :
+                                                <tr>
+                                                    <Td>
+                                                        <Button
+                                                            colorScheme='teal'
+                                                            onClick={() => {
+                                                                formik.setValues([...formik.values, { name: '', quantity: 0 }]);
+                                                            }}
+                                                            leftIcon={<MdAdd />}
+                                                        >
+                                                            Agregar producto
+                                                        </Button>
+                                                    </Td>
+                                                    <Td></Td>
+                                                    <Td></Td>
+                                                    <Td>
+                                                        <Stat textAlign='end'>
+                                                            <StatLabel fontSize={18}>Total</StatLabel>
+                                                            <StatNumber fontSize={27}>${total.toFixed(2)}</StatNumber>
+                                                        </Stat>
+                                                    </Td>
+                                                    <Td></Td>
+                                                </tr>
+                                            </Tbody>
+                                        </Table>
+
+                                        <Box textAlign='center' mt={10}>
+                                            <Button type='submit' colorScheme='green' onClick={onOpen}>Confirmar venta</Button>
+                                        </Box>
+                                    </form>
+                                </Box>
+
+                            </Box>
+                        )
+            }
+
+            {
+                loadingModal ?
+                    (<>
+                        <Modal
+                            isOpen={isOpen}
+                            onClose={onClose}
+                            isCentered
+                            size='xl'
+                            motionPreset='slideInBottom'>
+                            <ModalOverlay />
+                            <ModalContent >
+                                <ModalCloseButton />
+                                <ModalBody p='5rem' textAlign='center'>
+                                    <Spinner color='red.500' size='lg' />
+                                </ModalBody>
+                            </ModalContent>
+                        </Modal >
+                    </>)
+                    :
+                    confirmSaleModal ?
+                        (<>
+                            <Modal
+                                isOpen={isOpen}
+                                onClose={onClose}
+                                isCentered
+                                size='4xl'
+                                motionPreset='slideInBottom'>
+                                <ModalOverlay />
+                                <ModalContent >
+                                    <ModalHeader className={RobotoFont.className} textAlign='center'>
+                                        Confirma la venta
+                                    </ModalHeader>
+                                    <ModalCloseButton />
+                                    <ModalBody>
+
+                                        <TableContainer className={scFont.className} mt='1.2rem'>
+                                            <Table>
+                                                <Thead>
+                                                    <tr>
+                                                        <th>
+                                                            <Text>
+                                                                Producto
+                                                            </Text>
+                                                        </th>
+                                                        <th>
+                                                            <Text>
+                                                                Cantidad
+                                                            </Text>
+                                                        </th>
+                                                        <th>
+                                                            <Text>
+                                                                Precio de venta
+                                                            </Text>
+                                                        </th>
+                                                        <th>
+                                                            <Text>
+                                                                Total
+                                                            </Text>
+                                                        </th>
+                                                    </tr>
+                                                </Thead>
+                                                <Tbody>
+                                                    {
                                                         formik.values.map((producto, index) => (
                                                             <tr key={index}>
-                                                                <Td>
-                                                                    <Select
-                                                                        name={`[${index}].name`}
-                                                                        value={producto.name}
-                                                                        onChange={handleChange}
-                                                                        onBlur={formik.handleBlur}
-                                                                        placeholder='Selecciona el producto'
-                                                                        bg='green.300'
-                                                                        fontSize='20px'>
-                                                                        {
-                                                                            stockListData.map((item) => (
-                                                                                <option key={item?.id} value={item?.id}>{item?.name}</option>
-                                                                            ))
-                                                                        }
-                                                                    </Select>
+                                                                <Td textAlign='center' fontSize={18}>
                                                                     {
-                                                                        formik.errors[index] && formik.errors[index].name && (
-                                                                            <Alert status='error' variant='left-accent' mt='5px'>
-
-                                                                                {formik.errors[index].name}
-                                                                            </Alert>
-                                                                        )
+                                                                        stockListData
+                                                                            .filter(prod => prod?.id === +producto?.name)
+                                                                            .map(prod => (
+                                                                                <Text key={prod?.id} >
+                                                                                    <Tag colorScheme='green' >
+                                                                                        {prod?.name}
+                                                                                    </Tag>
+                                                                                </Text>
+                                                                            ))
                                                                     }
                                                                 </Td>
-                                                                <Td>
-                                                                    <NumberInput>
-                                                                        <NumberInputField
-                                                                            name={`[${index}].quantity`}
-                                                                            value={producto.quantity}
-                                                                            onChange={handleChange}
-                                                                            bg='gray.700' fontSize='20px' color='white'
-                                                                        />
-                                                                    </NumberInput>
+                                                                <Td textAlign='center'>
                                                                     {
-                                                                        formik.errors[index] && formik.errors[index].quantity && (
-                                                                            <Alert status='error' variant='left-accent' mt='5px'>
-                                                                                <AlertIcon />
-                                                                                {formik.errors[index].quantity}
-                                                                            </Alert>
-                                                                        )
+                                                                        stockListData
+                                                                            .filter(prod => prod?.id === +producto?.name)
+                                                                            .map(prod => (
+                                                                                <Text key={prod?.id} >
+                                                                                    <Tag colorScheme='green' >
+                                                                                        {formik.values[index].quantity} {prod?.unit}
+                                                                                    </Tag>
+                                                                                </Text>
+                                                                            ))
                                                                     }
                                                                 </Td>
                                                                 <Td textAlign='center'>
@@ -256,7 +459,7 @@ export default function SalesCreate2() {
                                                                             .filter(prod => prod?.id === +producto?.name)
                                                                             .map(prod => (
                                                                                 <Text key={prod?.id}>
-                                                                                    ${prod?.sellPrice}
+                                                                                    ${prod?.sellPrice} por {prod?.unit.toLocaleLowerCase()}
                                                                                 </Text>
                                                                             ))
                                                                     }
@@ -276,85 +479,38 @@ export default function SalesCreate2() {
                                                                             })
                                                                     }
                                                                 </Td>
-                                                                <Td textAlign='center'>
-
-                                                                    <Button
-                                                                        type="button"
-                                                                        colorScheme='red'
-                                                                        onClick={() => {
-                                                                            const newValues = formik.values.filter((_, productIndex) => productIndex !== index);
-                                                                            formik.setValues(newValues);
-                                                                        }}
-                                                                    >
-                                                                        <FiTrash2 />
-                                                                    </Button>
-                                                                </Td>
                                                             </tr>
                                                         ))
-                                                }
+                                                    }
+                                                    {
+                                                        <tr>
+                                                            <Td></Td>
+                                                            <Td></Td>
+                                                            <Td></Td>
+                                                            <Td fontSize={20} fontWeight='bold' textAlign='center'>${total.toFixed(2)}</Td>
+                                                        </tr>
 
-                                            </Tbody>
-                                        </Table>
-                                    </Flex>
+                                                    }
+                                                </Tbody>
+                                            </Table>
+                                        </TableContainer>
+                                    </ModalBody>
 
-                                    <Table size='lg'>
-                                        <Tbody>
-                                            <tr>
-                                                <Td>
-                                                    <Button
-                                                        colorScheme='teal'
-                                                        onClick={() => {
-                                                            formik.setValues([...formik.values, { name: '', quantity: 0 }]);
-                                                        }}
-                                                        leftIcon={<MdAdd />}
-                                                    >
-                                                        Agregar producto
-                                                    </Button>
-                                                </Td>
-                                                <Td></Td>
-                                                <Td></Td>
-                                                <Td>
-                                                    <Stat textAlign='end'>
-                                                        <StatLabel fontSize={18}>Total</StatLabel>
-                                                        <StatNumber fontSize={27}>${total.toFixed(2)}</StatNumber>
-                                                    </Stat>
-                                                </Td>
-                                                <Td></Td>
-                                            </tr>
-                                        </Tbody>
-                                    </Table>
-
-                                    <Box textAlign='center' mt={10}>
-                                        <Button type='submit' colorScheme='green' onClick={onOpen}>Confirmar venta</Button>
-                                    </Box>
-                                </form>
-                            </Box>
-
-
-
-
-                        </Box>
-                    )
+                                    <ModalFooter>
+                                        <Button colorScheme='red' mr={3} onClick={onClose}>
+                                            Cancelar
+                                        </Button>
+                                        <Button colorScheme='green' onClick={() => { handleSale(); setSaleFinishedModal(true) }}>
+                                            Confirmar
+                                        </Button>
+                                    </ModalFooter>
+                                </ModalContent>
+                            </Modal >
+                        </>) : (<></>)
             }
-
             {
-                loadingModal ? (<>
-                    <Modal
-                        isOpen={isOpen}
-                        onClose={onClose}
-                        isCentered
-                        size='xl'
-                        motionPreset='slideInBottom'>
-                        <ModalOverlay />
-                        <ModalContent >
-                            <ModalCloseButton />
-                            <ModalBody p='5rem' textAlign='center'>
-                                <Spinner color='red.500' size='lg' />
-                            </ModalBody>
-                        </ModalContent>
-                    </Modal >
-                </>) :
-                    confirmSaleModal ? (<>
+                saleFinishedModal ?
+                    (
                         <Modal
                             isOpen={isOpen}
                             onClose={onClose}
@@ -364,116 +520,36 @@ export default function SalesCreate2() {
                             <ModalOverlay />
                             <ModalContent >
                                 <ModalHeader className={RobotoFont.className} textAlign='center'>
-                                    Confirma la venta
+                                    ¿Desea generar otra venta?
                                 </ModalHeader>
                                 <ModalCloseButton />
                                 <ModalBody>
-
-                                    <TableContainer className={scFont.className} mt='1.2rem'>
-                                        <Table>
-                                            <Thead>
-                                                <tr>
-                                                    <th>
-                                                        <Text>
-                                                            Producto
-                                                        </Text>
-                                                    </th>
-                                                    <th>
-                                                        <Text>
-                                                            Cantidad (kg)
-                                                        </Text>
-                                                    </th>
-                                                    <th>
-                                                        <Text>
-                                                            Precio por kilo
-                                                        </Text>
-                                                    </th>
-                                                    <th>
-                                                        <Text>
-                                                            Total
-                                                        </Text>
-                                                    </th>
-                                                </tr>
-                                            </Thead>
-                                            <Tbody>
-                                                {
-                                                    formik.values.map((producto, index) => (
-                                                        <tr key={index}>
-                                                            <Td textAlign='center' fontSize={18}>
-                                                                {
-                                                                    stockListData
-                                                                        .filter(prod => prod?.id === +producto?.name)
-                                                                        .map(prod => (
-                                                                            <Text key={prod?.id} >
-                                                                                <Tag colorScheme='green' >
-                                                                                    {prod?.name}
-                                                                                </Tag>
-                                                                            </Text>
-                                                                        ))
-                                                                }
-                                                            </Td>
-                                                            <Td textAlign='center'>
-                                                                <Text>
-                                                                    {
-                                                                        formik.values[index].quantity
-                                                                    }
-                                                                </Text>
-                                                            </Td>
-                                                            <Td textAlign='center'>
-                                                                {
-                                                                    stockListData
-                                                                        .filter(prod => prod?.id === +producto?.name)
-                                                                        .map(prod => (
-                                                                            <Text key={prod?.id}>
-                                                                                ${prod?.sellPrice}
-                                                                            </Text>
-                                                                        ))
-                                                                }
-                                                            </Td>
-                                                            <Td textAlign='center'>
-                                                                {
-                                                                    stockListData
-                                                                        .filter(prod => prod?.id === +producto?.name)
-                                                                        .map(prod => {
-                                                                            const finalPrice = (prod?.sellPrice * formik.values[index].quantity).toFixed(2)
-
-                                                                            return (
-                                                                                <Text key={prod?.id}>
-                                                                                    ${finalPrice}
-                                                                                </Text>
-                                                                            )
-                                                                        })
-                                                                }
-                                                            </Td>
-
-                                                        </tr>
-                                                    ))
-                                                }
-                                                {
-                                                    <tr>
-                                                        <Td></Td>
-                                                        <Td></Td>
-                                                        <Td></Td>
-                                                        <Td fontSize={20} fontWeight='bold' textAlign='center'>${total.toFixed(2)}</Td>
-                                                    </tr>
-
-                                                }
-                                            </Tbody>
-                                        </Table>
-                                    </TableContainer>
+                                    <Text>
+                                        Presiona
+                                        <Badge fontSize='1em' colorScheme='green'>
+                                            Si
+                                        </Badge> para mantenerte en esta página y generar otra venta.
+                                    </Text>
+                                    <Text>
+                                        Presiona <Badge fontSize='1em' colorScheme='red'>
+                                            No
+                                        </Badge> para salir hacia el registro de ventas.
+                                    </Text>
                                 </ModalBody>
 
                                 <ModalFooter>
-                                    <Button colorScheme='red' mr={3} onClick={onClose}>
-                                        Cancelar
-                                    </Button>
-                                    <Button colorScheme='green' onClick={handleSale}>
-                                        Confirmar
+                                    <Link href='/sales'>
+                                        <Button colorScheme='red' mr={3}>
+                                            No
+                                        </Button>
+                                    </Link>
+                                    <Button colorScheme='green' onClick={() => { onClose(); location.reload() }}>
+                                        Si
                                     </Button>
                                 </ModalFooter>
                             </ModalContent>
                         </Modal >
-                    </>) : (<></>)
+                    ) : (<></>)
             }
         </>
     )

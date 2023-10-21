@@ -59,7 +59,7 @@ export default function SalesList() {
                                     <Th textAlign='center' fontSize='0.85rem'>Fecha</Th>
                                     <Th textAlign='center' fontSize='0.85rem'>Total</Th>
                                     <Th textAlign='center' fontSize='0.85rem'>Detalles</Th>
-                                    <Th textAlign='center' fontSize='0.85rem'></Th>
+
                                 </Tr>
                             </Thead>
                             <Tbody>
@@ -68,15 +68,17 @@ export default function SalesList() {
                                         data.map((prod: ISales, index) => (
                                             <Tr key={index}>
                                                 <Td textAlign='center'>
-                                                    <Badge fontSize='1em' colorScheme='green'>
-                                                        <Text fontSize='1.2rem' textAlign='center'>{formatDatetime(prod.date)}</Text>
+                                                    <Badge fontSize='1.2em' colorScheme='green' textAlign='center'>
+                                                        {formatDatetime(prod.date)}
                                                     </Badge>
                                                 </Td>
-                                                <Td>
-                                                    <Text fontSize='1.2rem' textAlign='center'>${prod.total}</Text>
+                                                <Td fontSize='1.2rem' textAlign='center'>
+                                                    ${prod.total}
                                                 </Td>
                                                 <Td style={{ textAlign: 'center' }}>
-                                                    <Button colorScheme='teal' onClick={() => setDetail(prod.stockMovementDetail, prod)}>Ver detalles</Button>
+                                                    <Button colorScheme='teal' onClick={() => setDetail(prod.stockMovementDetail, prod)}>
+                                                        Ver detalles
+                                                    </Button>
                                                 </Td>
                                             </Tr>
                                         ))
@@ -111,24 +113,16 @@ export default function SalesList() {
                                     <Thead>
                                         <tr>
                                             <th>
-                                                <Text>
-                                                    Producto
-                                                </Text>
+                                                Producto
                                             </th>
                                             <th>
-                                                <Text>
-                                                    Cantidad (kg)
-                                                </Text>
+                                                Cantidad
                                             </th>
                                             <th>
-                                                <Text>
-                                                    Precio de compra
-                                                </Text>
+                                                Precio de venta
                                             </th>
                                             <th>
-                                                <Text>
-                                                    Precio de venta
-                                                </Text>
+                                                Total
                                             </th>
                                         </tr>
                                     </Thead>
@@ -147,11 +141,8 @@ export default function SalesList() {
                                                     <Td textAlign='center'>
                                                         {
                                                             producto.quantity
-                                                        }
-                                                    </Td>
-                                                    <Td textAlign='center'>
-                                                        ${
-                                                            producto.buyPrice
+                                                        } {
+                                                            producto.unit
                                                         }
                                                     </Td>
                                                     <Td textAlign='center'>
@@ -159,32 +150,39 @@ export default function SalesList() {
                                                             producto.sellPrice
                                                         }
                                                     </Td>
+                                                    <Td textAlign='center'>
+                                                        ${
+                                                            producto.sellPrice * producto.quantity
+                                                        }
+                                                    </Td>
                                                 </tr>
                                             )
                                             )
                                         }
                                         {
-                                            <>
-                                                <tr>
-                                                    <Td> </Td>
-                                                    <Td> </Td>
-                                                    <Td> </Td>
-                                                    <Td> </Td>
-                                                </tr>
-                                                <tr>
-                                                    <Td></Td>
-                                                    <Td></Td>
-                                                    <Td textAlign='end' fontSize={28} fontWeight='bold'>Total</Td>
-                                                    <Td textAlign='center' fontSize={28} fontWeight='bold'>${currentSale.total}</Td>
-                                                </tr>
-                                            </>
+                                            <tr>
+                                                <Td></Td>
+                                                <Td></Td>
+                                                <Td></Td>
+                                                <Td textAlign='center' fontSize={28} fontWeight='bold'>${currentSale.total}</Td>
+                                            </tr>
                                         }
                                     </Tbody>
                                 </Table>
                             </TableContainer>
+                            {/* <Tag colorScheme='green'>Precio de compra: {currentDetailData.map}</Tag> */}
+                            <Tag colorScheme='teal'>Beneficio total: ${currentDetailData.reduce((totalBenefit, prod) => {
+                                const worth = (prod.sellPrice - prod.buyPrice) * prod.quantity;
+                                console.log(prod.quantity);
+                                console.log(prod.buyPrice);
+                                console.log(prod.sellPrice);
+                                return totalBenefit + worth;
+                            }, 0)}</Tag>
+
                         </ModalBody>
 
                         <ModalFooter>
+
                             <Button colorScheme='red' mr={3} onClick={onClose}>
                                 Cerrar
                             </Button>
