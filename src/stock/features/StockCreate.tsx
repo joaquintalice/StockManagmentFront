@@ -49,16 +49,11 @@ export default function StockCreate() {
             setConfirmModal(false)
 
             async function submitHandler() {
-                const dinamicQuantity = values.unit === '(Docena)' ? +values.quantity * 12 : +values.quantity
-                const dinamicUnit = values.unit === '(Docena)' ? '(Unidad)' : values.unit
-
-                console.log(dinamicQuantity)
-                console.log(dinamicUnit)
 
                 const data = {
                     name: values.name,
-                    unit: dinamicUnit,
-                    quantity: dinamicQuantity * 1, // Se convierte de string a numero con el *1
+                    unit: values.unit,
+                    quantity: +values.quantity * 1, // Se convierte de string a numero con el *1
                     buyPrice: values.buyPrice * 1,
                     sellPrice: values.sellPrice * 1
                 }
@@ -75,8 +70,8 @@ export default function StockCreate() {
 
                     const dataToUpdate = {
                         name: values.name,
-                        unit: dinamicUnit,
-                        quantity: (prod.quantity * 1) + (dinamicQuantity * 1), // Se convierte de string a numero con el *1
+                        unit: values.unit,
+                        quantity: (prod.quantity * 1) + (+values.quantity * 1), // Se convierte de string a numero con el *1
                         buyPrice: values.buyPrice * 1,
                         sellPrice: values.sellPrice * 1,
                     }
@@ -200,7 +195,7 @@ export default function StockCreate() {
                                             Unidad
                                             <Alert status='info' variant='top-accent' fontSize='14px' display='flex' alignItems='center' gap={2}>
                                                 <AlertIcon />
-                                                Selecciona la unidad mediante la que será vendido el producto
+                                                Selecciona la unidad mediante la que será vendido y almacenado el producto
                                             </Alert>
                                         </FormLabel>
                                         <Select
@@ -232,7 +227,7 @@ export default function StockCreate() {
                                         <FormLabel fontSize='18px'>Cantidad
                                             <Alert status='info' variant='top-accent' fontSize='14px' display='flex' alignItems='center' gap={2}>
                                                 <AlertIcon />
-                                                Selecciona la unidad mediante la que será vendido el producto
+                                                Ingrese la cantidad respetando la unidad asignada.
                                             </Alert>
                                         </FormLabel>
                                         <NumberInput>
