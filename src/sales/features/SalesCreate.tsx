@@ -19,7 +19,12 @@ import Link from 'next/link'
 export default function SalesCreate2() {
 
     const toast = useToast();
+
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const confirmSaleModalDisclosure = useDisclosure();
+    const saleFinishedModalDisclosure = useDisclosure();
+
+
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<boolean>(false)
 
@@ -161,7 +166,9 @@ export default function SalesCreate2() {
             await CashboxRepository.update(1, updatedCashbox);
 
             setLoadingModal(false)
-            onClose();
+            confirmSaleModalDisclosure.onClose()
+            setSaleFinishedModal(true)
+            saleFinishedModalDisclosure.onOpen()
             toast({
                 position: 'top-right',
                 title: 'Venta realizada exitosamente',
@@ -353,7 +360,7 @@ export default function SalesCreate2() {
                                         </Table>
 
                                         <Box textAlign='center' mt={10}>
-                                            <Button type='submit' colorScheme='green' onClick={onOpen}>Confirmar venta</Button>
+                                            <Button type='submit' colorScheme='green' onClick={() => confirmSaleModalDisclosure.onOpen()}>Confirmar venta</Button>
                                         </Box>
                                     </form>
                                 </Box>
@@ -384,8 +391,10 @@ export default function SalesCreate2() {
                     confirmSaleModal ?
                         (<>
                             <Modal
-                                isOpen={isOpen}
-                                onClose={onClose}
+                                isOpen={confirmSaleModalDisclosure.isOpen}
+                                onClose={() => {
+                                    confirmSaleModalDisclosure.onClose()
+                                }}
                                 isCentered
                                 size='4xl'
                                 motionPreset='slideInBottom'>
@@ -497,10 +506,10 @@ export default function SalesCreate2() {
                                     </ModalBody>
 
                                     <ModalFooter>
-                                        <Button colorScheme='red' mr={3} onClick={onClose}>
+                                        <Button colorScheme='red' mr={3} onClick={() => confirmSaleModalDisclosure.onClose()}>
                                             Cancelar
                                         </Button>
-                                        <Button colorScheme='green' onClick={() => { handleSale(); setSaleFinishedModal(true) }}>
+                                        <Button colorScheme='green' onClick={() => handleSale()}>
                                             Confirmar
                                         </Button>
                                     </ModalFooter>
@@ -512,8 +521,8 @@ export default function SalesCreate2() {
                 saleFinishedModal ?
                     (
                         <Modal
-                            isOpen={isOpen}
-                            onClose={onClose}
+                            isOpen={saleFinishedModalDisclosure.isOpen}
+                            onClose={() => saleFinishedModalDisclosure.onClose()}
                             isCentered
                             size='4xl'
                             motionPreset='slideInBottom'>
@@ -543,7 +552,7 @@ export default function SalesCreate2() {
                                             No
                                         </Button>
                                     </Link>
-                                    <Button colorScheme='green' onClick={() => { onClose(); location.reload() }}>
+                                    <Button colorScheme='green' onClick={() => { saleFinishedModalDisclosure.onClose(); location.reload() }}>
                                         Si
                                     </Button>
                                 </ModalFooter>
