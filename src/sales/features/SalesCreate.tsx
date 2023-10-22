@@ -200,7 +200,6 @@ export default function SalesCreate2() {
                                 </Center>
 
                                 <Box display='flex' justifyContent='center'>
-
                                     <form onSubmit={handleSubmit}>
                                         <Flex>
                                             <Table size='lg'>

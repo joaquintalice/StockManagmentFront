@@ -22,9 +22,7 @@ const SalesCreateHeader = () => {
                 <Button
                     variant="outline"
                     onClick={navigateToSaleList}
-                    color='white'
-                    _hover={{ background: 'green.700' }}
-                    background='green.500'
+                    colorScheme='teal'
                     leftIcon={<AiOutlineClose />}
                 >
                     Volver a la lista de ventas
