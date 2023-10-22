@@ -32,8 +32,7 @@ export default function SalesCreate2() {
     const [total, setTotal] = useState<number>(0);
 
     const [loadingModal, setLoadingModal] = useState<boolean>(false);
-    const [confirmSaleModal, setConfirmSaleModal] = useState<boolean>(false);
-    const [saleFinishedModal, setSaleFinishedModal] = useState<boolean>(false);
+
 
     const [products, setProducts] = useState([{ name: '', quantity: 0 }]);
 
@@ -42,10 +41,8 @@ export default function SalesCreate2() {
         initialValues: products,
 
         onSubmit: (values) => {
-            setConfirmSaleModal(true)
         },
         validate: (values) => {
-            setConfirmSaleModal(false)
             const result = SalesSchema.safeParse(values);
 
             if (result.success) {
@@ -167,8 +164,8 @@ export default function SalesCreate2() {
 
             setLoadingModal(false)
             confirmSaleModalDisclosure.onClose()
-            setSaleFinishedModal(true)
             saleFinishedModalDisclosure.onOpen()
+
             toast({
                 position: 'top-right',
                 title: 'Venta realizada exitosamente',
@@ -387,179 +384,177 @@ export default function SalesCreate2() {
                             </ModalContent>
                         </Modal >
                     </>)
-                    :
-                    confirmSaleModal ?
-                        (<>
-                            <Modal
-                                isOpen={confirmSaleModalDisclosure.isOpen}
-                                onClose={() => {
-                                    confirmSaleModalDisclosure.onClose()
-                                }}
-                                isCentered
-                                size='4xl'
-                                motionPreset='slideInBottom'>
-                                <ModalOverlay />
-                                <ModalContent >
-                                    <ModalHeader className={RobotoFont.className} textAlign='center'>
-                                        Confirma la venta
-                                    </ModalHeader>
-                                    <ModalCloseButton />
-                                    <ModalBody>
-
-                                        <TableContainer className={scFont.className} mt='1.2rem'>
-                                            <Table>
-                                                <Thead>
-                                                    <tr>
-                                                        <th>
-                                                            <Text>
-                                                                Producto
-                                                            </Text>
-                                                        </th>
-                                                        <th>
-                                                            <Text>
-                                                                Cantidad
-                                                            </Text>
-                                                        </th>
-                                                        <th>
-                                                            <Text>
-                                                                Precio de venta
-                                                            </Text>
-                                                        </th>
-                                                        <th>
-                                                            <Text>
-                                                                Total
-                                                            </Text>
-                                                        </th>
-                                                    </tr>
-                                                </Thead>
-                                                <Tbody>
-                                                    {
-                                                        formik.values.map((producto, index) => (
-                                                            <tr key={index}>
-                                                                <Td textAlign='center' fontSize={18}>
-                                                                    {
-                                                                        stockListData
-                                                                            .filter(prod => prod?.id === +producto?.name)
-                                                                            .map(prod => (
-                                                                                <Text key={prod?.id} >
-                                                                                    <Tag colorScheme='green' >
-                                                                                        {prod?.name}
-                                                                                    </Tag>
-                                                                                </Text>
-                                                                            ))
-                                                                    }
-                                                                </Td>
-                                                                <Td textAlign='center'>
-                                                                    {
-                                                                        stockListData
-                                                                            .filter(prod => prod?.id === +producto?.name)
-                                                                            .map(prod => (
-                                                                                <Text key={prod?.id} >
-                                                                                    <Tag colorScheme='green' >
-                                                                                        {formik.values[index].quantity} {prod?.unit}
-                                                                                    </Tag>
-                                                                                </Text>
-                                                                            ))
-                                                                    }
-                                                                </Td>
-                                                                <Td textAlign='center'>
-                                                                    {
-                                                                        stockListData
-                                                                            .filter(prod => prod?.id === +producto?.name)
-                                                                            .map(prod => (
-                                                                                <Text key={prod?.id}>
-                                                                                    ${prod?.sellPrice} por {prod?.unit.toLocaleLowerCase()}
-                                                                                </Text>
-                                                                            ))
-                                                                    }
-                                                                </Td>
-                                                                <Td textAlign='center'>
-                                                                    {
-                                                                        stockListData
-                                                                            .filter(prod => prod?.id === +producto?.name)
-                                                                            .map(prod => {
-                                                                                const finalPrice = (prod?.sellPrice * formik.values[index].quantity).toFixed(2)
-
-                                                                                return (
-                                                                                    <Text key={prod?.id}>
-                                                                                        ${finalPrice}
-                                                                                    </Text>
-                                                                                )
-                                                                            })
-                                                                    }
-                                                                </Td>
-                                                            </tr>
-                                                        ))
-                                                    }
-                                                    {
-                                                        <tr>
-                                                            <Td></Td>
-                                                            <Td></Td>
-                                                            <Td></Td>
-                                                            <Td fontSize={20} fontWeight='bold' textAlign='center'>${total.toFixed(2)}</Td>
-                                                        </tr>
-
-                                                    }
-                                                </Tbody>
-                                            </Table>
-                                        </TableContainer>
-                                    </ModalBody>
-
-                                    <ModalFooter>
-                                        <Button colorScheme='red' mr={3} onClick={() => confirmSaleModalDisclosure.onClose()}>
-                                            Cancelar
-                                        </Button>
-                                        <Button colorScheme='green' onClick={() => handleSale()}>
-                                            Confirmar
-                                        </Button>
-                                    </ModalFooter>
-                                </ModalContent>
-                            </Modal >
-                        </>) : (<></>)
+                    : <></>
             }
+
             {
-                saleFinishedModal ?
-                    (
-                        <Modal
-                            isOpen={saleFinishedModalDisclosure.isOpen}
-                            onClose={() => saleFinishedModalDisclosure.onClose()}
-                            isCentered
-                            size='4xl'
-                            motionPreset='slideInBottom'>
-                            <ModalOverlay />
-                            <ModalContent >
-                                <ModalHeader className={RobotoFont.className} textAlign='center'>
-                                    ¿Desea generar otra venta?
-                                </ModalHeader>
-                                <ModalCloseButton />
-                                <ModalBody>
-                                    <Text>
-                                        Presiona
-                                        <Badge fontSize='1em' colorScheme='green'>
-                                            Si
-                                        </Badge> para mantenerte en esta página y generar otra venta.
-                                    </Text>
-                                    <Text>
-                                        Presiona <Badge fontSize='1em' colorScheme='red'>
-                                            No
-                                        </Badge> para salir hacia el registro de ventas.
-                                    </Text>
-                                </ModalBody>
+                <Modal
+                    isOpen={confirmSaleModalDisclosure.isOpen}
+                    onClose={() => confirmSaleModalDisclosure.onClose()}
+                    isCentered
+                    size='4xl'
+                    motionPreset='slideInBottom'>
+                    <ModalOverlay />
+                    <ModalContent >
+                        <ModalHeader className={RobotoFont.className} textAlign='center'>
+                            Confirma la venta
+                        </ModalHeader>
+                        <ModalCloseButton />
+                        <ModalBody>
 
-                                <ModalFooter>
-                                    <Link href='/sales'>
-                                        <Button colorScheme='red' mr={3}>
-                                            No
-                                        </Button>
-                                    </Link>
-                                    <Button colorScheme='green' onClick={() => { saleFinishedModalDisclosure.onClose(); location.reload() }}>
-                                        Si
-                                    </Button>
-                                </ModalFooter>
-                            </ModalContent>
-                        </Modal >
-                    ) : (<></>)
+                            <TableContainer className={scFont.className} mt='1.2rem'>
+                                <Table>
+                                    <Thead>
+                                        <tr>
+                                            <th>
+                                                <Text>
+                                                    Producto
+                                                </Text>
+                                            </th>
+                                            <th>
+                                                <Text>
+                                                    Cantidad
+                                                </Text>
+                                            </th>
+                                            <th>
+                                                <Text>
+                                                    Precio de venta
+                                                </Text>
+                                            </th>
+                                            <th>
+                                                <Text>
+                                                    Total
+                                                </Text>
+                                            </th>
+                                        </tr>
+                                    </Thead>
+                                    <Tbody>
+                                        {
+                                            formik.values.map((producto, index) => (
+                                                <tr key={index}>
+                                                    <Td textAlign='center' fontSize={18}>
+                                                        {
+                                                            stockListData
+                                                                .filter(prod => prod?.id === +producto?.name)
+                                                                .map(prod => (
+                                                                    <Text key={prod?.id} >
+                                                                        <Tag colorScheme='green' >
+                                                                            {prod?.name}
+                                                                        </Tag>
+                                                                    </Text>
+                                                                ))
+                                                        }
+                                                    </Td>
+                                                    <Td textAlign='center'>
+                                                        {
+                                                            stockListData
+                                                                .filter(prod => prod?.id === +producto?.name)
+                                                                .map(prod => (
+                                                                    <Text key={prod?.id} >
+                                                                        <Tag colorScheme='green' >
+                                                                            {formik.values[index].quantity} {prod?.unit}
+                                                                        </Tag>
+                                                                    </Text>
+                                                                ))
+                                                        }
+                                                    </Td>
+                                                    <Td textAlign='center'>
+                                                        {
+                                                            stockListData
+                                                                .filter(prod => prod?.id === +producto?.name)
+                                                                .map(prod => (
+                                                                    <Text key={prod?.id}>
+                                                                        ${prod?.sellPrice} por {prod?.unit.toLocaleLowerCase()}
+                                                                    </Text>
+                                                                ))
+                                                        }
+                                                    </Td>
+                                                    <Td textAlign='center'>
+                                                        {
+                                                            stockListData
+                                                                .filter(prod => prod?.id === +producto?.name)
+                                                                .map(prod => {
+                                                                    const finalPrice = (prod?.sellPrice * formik.values[index].quantity).toFixed(2)
+
+                                                                    return (
+                                                                        <Text key={prod?.id}>
+                                                                            ${finalPrice}
+                                                                        </Text>
+                                                                    )
+                                                                })
+                                                        }
+                                                    </Td>
+                                                </tr>
+                                            ))
+                                        }
+                                        {
+                                            <tr>
+                                                <Td></Td>
+                                                <Td></Td>
+                                                <Td></Td>
+                                                <Td fontSize={20} fontWeight='bold' textAlign='center'>${total.toFixed(2)}</Td>
+                                            </tr>
+
+                                        }
+                                    </Tbody>
+                                </Table>
+                            </TableContainer>
+                        </ModalBody>
+
+                        <ModalFooter>
+                            <Button colorScheme='red' mr={3} onClick={() => confirmSaleModalDisclosure.onClose()}>
+                                Cancelar
+                            </Button>
+                            <Button colorScheme='green' onClick={() => handleSale()}>
+                                Confirmar
+                            </Button>
+                        </ModalFooter>
+                    </ModalContent>
+                </Modal>
             }
+
+            {
+                <Modal
+                    isOpen={saleFinishedModalDisclosure.isOpen}
+                    onClose={() => saleFinishedModalDisclosure.onClose()}
+                    isCentered
+                    size='4xl'
+                    motionPreset='slideInBottom'
+                >
+                    <ModalOverlay />
+                    <ModalContent >
+                        <ModalHeader className={RobotoFont.className} textAlign='center'>
+                            ¿Desea generar otra venta?
+                        </ModalHeader>
+                        <ModalCloseButton />
+                        <ModalBody>
+                            <Text>
+                                Presiona
+                                <Badge fontSize='1em' colorScheme='green'>
+                                    Si
+                                </Badge> para mantenerte en esta página y generar otra venta.
+                            </Text>
+                            <Text>
+                                Presiona <Badge fontSize='1em' colorScheme='red'>
+                                    No
+                                </Badge> para salir hacia el registro de ventas.
+                            </Text>
+                        </ModalBody>
+
+                        <ModalFooter>
+                            <Link href='/sales'>
+                                <Button colorScheme='red' mr={3}>
+                                    No
+                                </Button>
+                            </Link>
+                            <Button colorScheme='green' onClick={() => { saleFinishedModalDisclosure.onClose(); location.reload() }}>
+                                Si
+                            </Button>
+                        </ModalFooter>
+                    </ModalContent>
+                </Modal >
+            }
+
         </>
     )
 }
