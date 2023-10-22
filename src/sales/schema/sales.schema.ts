@@ -9,6 +9,4 @@ export const SalesSchema = z.array(
 
 type SalesZod = z.infer<typeof SalesSchema>;
 
-console.log(SalesSchema)
-
 export default SalesZod
