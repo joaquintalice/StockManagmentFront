@@ -18,7 +18,7 @@ import ProductRepository from '../data/repository/Product.repository';
 import { useEffect, useState } from 'react';
 import Product from '../data/interfaces/Product';
 import Loading from '@/app/loading';
-import StockSearchbar from './StockSearchbar';
+import StockSearchbar from './StockListSearchbar';
 import StockTableRow from './StockListTableRow';
 import DeleteProductModal from './StockListDeleteProductModal';
 
