@@ -1,6 +1,6 @@
 import PageLayout from '@/shared/components/layouts/pageLayout'
 import StockCreate from '@/stock/features/StockCreate/StockCreate';
-import StockCreateHeader from '@/stock/features/StockCreate/StockCreateHeader';
+import MainHeader from '@/stock/features/StockHeader';
 
 
 export default async function StockPage() {
@@ -10,7 +10,11 @@ export default async function StockPage() {
         <PageLayout>
             {{
                 header: (
-                    <StockCreateHeader />
+                    <MainHeader
+                        title='Stock'
+                        btnHref='/stock'
+                        btnText='Volver a la lista de stock'
+                    />
                 ),
                 content: <StockCreate />,
             }}

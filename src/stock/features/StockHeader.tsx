@@ -1,31 +1,37 @@
 'use client'
-import { Box, Button, Flex, Heading, Input } from "@chakra-ui/react";
+import { Button, Flex, Heading } from "@chakra-ui/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 
-const StockHeader = () => {
+interface HeaderProps {
+    title: string
+    btnHref: string
+    btnText: string
+}
+
+const MainHeader: React.FC<HeaderProps> = ({ title, btnHref, btnText }) => {
     const router = useRouter();
     const navigateToCreateStock = useCallback(
-        () => router.push("/stock/create"),
+        () => router.push(`${btnHref}`),
         [router]
     );
 
 
     return (
         <Flex justify="space-between" wrap='wrap' gap={1}>
-            <Link href='/stock'>
-                <Heading justifyContent='center' as='h1'>Stock</Heading>
+            <Link href='/'>
+                <Heading justifyContent='center' as='h1'>{title}</Heading>
             </Link>
 
             <Button
                 variant="outline"
                 onClick={navigateToCreateStock}
                 colorScheme="teal" >
-                Crear producto
+                {btnText}
             </Button>
         </Flex>
     );
 };
 
-export default StockHeader;
+export default MainHeader;
