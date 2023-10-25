@@ -1,6 +1,6 @@
 import PageLayout from '@/shared/components/layouts/pageLayout'
-import StockCreate from '@/stock/features/StockCreate';
-import StockCreateHeader from '@/stock/features/StockCreateHeader';
+import StockCreate from '@/stock/features/StockCreate/StockCreate';
+import StockCreateHeader from '@/stock/features/StockCreate/StockCreateHeader';
 
 
 export default async function StockPage() {
