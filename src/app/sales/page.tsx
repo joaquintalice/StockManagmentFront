@@ -1,6 +1,6 @@
-import SalesHeader from '@/sales/features/SalesHeader'
-import SalesList from '@/sales/features/SalesList'
+import SalesList from '@/sales/features/SalesList/SalesList'
 import PageLayout from '@/shared/components/layouts/pageLayout'
+import MainHeader from '@/stock/features/StockHeader'
 import React from 'react'
 
 export default function SalesPage() {
@@ -8,7 +8,11 @@ export default function SalesPage() {
         <PageLayout>
             {{
                 header: (
-                    <SalesHeader />
+                    <MainHeader
+                        title='Ventas'
+                        btnText='Generar venta'
+                        btnHref='/sales/create'
+                    />
                 ),
                 content: <SalesList />,
             }}
