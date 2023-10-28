@@ -2,10 +2,10 @@
 import formatDatetime from '@/shared/utils/formatDate'
 import { Badge, Button, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Table, TableContainer, Tag, Tbody, Td, Text, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
-import ISales from '../data/interfaces/Sales.interface'
-import { SalesRepository } from '../data/repository/SalesRepository'
+import ISales from '../../data/interfaces/Sales.interface'
+import { SalesRepository } from '../../data/repository/SalesRepository'
 import { RobotoFont, scFont } from '@/shared/utils/fonts'
-import ICreateSalesDetail from '../data/interfaces/SalesDetail.interface'
+import ICreateSalesDetail from '../../data/interfaces/SalesDetail.interface'
 
 export default function SalesList() {
 
