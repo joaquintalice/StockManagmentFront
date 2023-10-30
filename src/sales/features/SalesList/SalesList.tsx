@@ -152,7 +152,7 @@ export default function SalesList() {
                                                     </Td>
                                                     <Td textAlign='center'>
                                                         ${
-                                                            producto.sellPrice * producto.quantity
+                                                            (producto.sellPrice * producto.quantity).toFixed(2)
                                                         }
                                                     </Td>
                                                 </tr>
