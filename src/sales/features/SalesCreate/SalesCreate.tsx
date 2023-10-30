@@ -1,8 +1,8 @@
 'use client'
 
-import { Alert, AlertIcon, Badge, Box, Button, Center, Flex, Heading, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, NumberInput, NumberInputField, Spinner, Stat, StatLabel, StatNumber, Table, TableContainer, Tag, Tbody, Td, Text, Th, Thead, useDisclosure, useToast } from '@chakra-ui/react'
+import { Alert, AlertIcon, Badge, Box, Button, Center, Flex, Heading, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalOverlay, NumberInput, NumberInputField, Spinner, Stat, StatLabel, StatNumber, Table, Tbody, Td, Text, Th, Thead, useDisclosure, useToast } from '@chakra-ui/react'
 import { FormikValues, useFormik } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { SalesSchema } from '../../schema/sales.schema'
 
 import SalesRepository from '../../data/repository/SalesRepository'
@@ -18,6 +18,8 @@ import SalesCreateConfirmModal from './SalesCreateConfirmModal'
 import SalesCreateQuestionModal from './SalesCreateQuestionModal'
 import Product from '@/stock/data/interfaces/Product'
 
+import { useReactToPrint } from 'react-to-print'
+import SalesCreateTicket from '@/sales/features/SalesCreate/SalesCreateTicket'
 
 export default function SalesCreate() {
 
@@ -130,10 +132,10 @@ export default function SalesCreate() {
     };
 
 
-
     useEffect(() => {
         calculateTotal(formik.values);
     }, [formik.values]);
+
 
     async function handleSale() {
         try {
@@ -179,6 +181,7 @@ export default function SalesCreate() {
             loadingModalDisclosure.onClose()
             questionModalDisclosure.onOpen()
 
+
             toast({
                 position: 'top-right',
                 title: 'Venta realizada exitosamente',
@@ -194,6 +197,11 @@ export default function SalesCreate() {
             setError(true)
         }
     }
+
+    const componentToPrintRef = useRef<HTMLDivElement>()
+    const handlePrint = useReactToPrint({
+        content: () => componentToPrintRef.current,
+    })
 
     return (
         <>
@@ -404,6 +412,7 @@ export default function SalesCreate() {
                     stockListData={stockListData}
                     total={total}
                     handleSaleFunction={handleSale}
+                    handlePrint={() => handlePrint()}
                 />
             }
 
@@ -413,6 +422,41 @@ export default function SalesCreate() {
                     onClose={() => questionModalDisclosure.onClose()}
                 />
             }
+
+            {
+                <SalesCreateTicket
+                    formikValues={formik.values}
+                    stockListData={stockListData}
+                    total={total}
+                    ref={componentToPrintRef}
+                />
+
+                // <Modal
+                //     isOpen={ticketQuestionModalDisclosure.isOpen}
+                //     onClose={() => ticketQuestionModalDisclosure.onClose()}
+                //     isCentered
+                //     size='4xl'
+                //     motionPreset='slideInBottom'>
+                //     <ModalOverlay />
+                //     <ModalContent >
+                //         <ModalCloseButton />
+                //         <ModalBody p='5rem' textAlign='center'>
+                //             <Heading>Desea imprimir el ticket?</Heading>
+                //             <small>Ticket:</small>
+                //             <SalesCreateTicket
+                //                 formikValues={formik.values}
+                //                 stockListData={stockListData}
+                //                 total={total}
+                //                 ref={componentToPrintRef}
+                //             />
+                //         </ModalBody>
+                //         <ModalFooter>
+                //             <Button colorScheme='purple' onClick={() => handlePrint()}>Imprimir ticket</Button>
+                //         </ModalFooter>
+                //     </ModalContent>
+                // </Modal >
+            }
+
 
         </>
     )
