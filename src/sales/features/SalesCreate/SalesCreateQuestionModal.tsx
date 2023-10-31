@@ -44,7 +44,7 @@ const SalesCreateQuestionModal: React.FC<questionModalProps> = ({ isOpen, onClos
                             No
                         </Button>
                     </Link>
-                    <Button colorScheme='green' onClick={() => { onClose(); location.reload() }}>
+                    <Button colorScheme='green' onClick={() => { onClose(); }}>
                         Si
                     </Button>
                 </ModalFooter>

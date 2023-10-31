@@ -1,6 +1,6 @@
 'use client'
 
-import { Alert, AlertIcon, Badge, Box, Button, Center, Flex, Heading, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalOverlay, NumberInput, NumberInputField, Spinner, Stat, StatLabel, StatNumber, Table, Tbody, Td, Text, Th, Thead, useDisclosure, useToast } from '@chakra-ui/react'
+import { Alert, AlertIcon, Badge, Box, Button, Center, Flex, Heading, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalOverlay, NumberInput, NumberInputField, Spinner, Stat, StatLabel, StatNumber, Table, Tbody, Td, Text, Th, Thead, useDisclosure, useToast } from '@chakra-ui/react'
 import { FormikValues, useFormik } from 'formik'
 import React, { useEffect, useState, useRef } from 'react'
 import { SalesSchema } from '../../schema/sales.schema'
@@ -38,6 +38,7 @@ export default function SalesCreate() {
     const [total, setTotal] = useState<number>(0);
 
     const [products, setProducts] = useState([{ name: '', quantity: 0 }]);
+    const [saleCounter, setSaleCounter] = useState<number>(0);
 
 
 
@@ -94,7 +95,7 @@ export default function SalesCreate() {
         }
 
         getStockListData()
-    }, [])
+    }, [saleCounter])
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         formik.handleChange(event);
@@ -191,7 +192,9 @@ export default function SalesCreate() {
                 isClosable: true,
             });
 
-
+            formik.resetForm()
+            setSaleCounter(saleCounter + 1)
+            console.log(saleCounter)
         } catch (error) {
             console.log(error)
             setError(true)
@@ -222,8 +225,8 @@ export default function SalesCreate() {
 
                                 <Box display='flex' justifyContent='center'>
                                     <form onSubmit={handleSubmit}>
-                                        <Flex>
-                                            <Table size='lg'>
+                                        <Flex >
+                                            <Table size={{ base: 'sm', lg: 'lg' }} overflowX='auto'>
                                                 <Thead>
                                                     <tr>
                                                         <Th>Nombre</Th>
@@ -243,7 +246,7 @@ export default function SalesCreate() {
                                                                 console.log(producto)
                                                                 return (
                                                                     <tr key={index}>
-                                                                        <Td>
+                                                                        <Td width='30%'>
                                                                             <Select
                                                                                 name={`[${index}].name`}
                                                                                 onChange={handleChangeInputName}
@@ -285,9 +288,10 @@ export default function SalesCreate() {
                                                                                 ) : (<></>)
                                                                             }
                                                                             <NumberInput>
-                                                                                <NumberInputField
+                                                                                <Input
+                                                                                    type='number'
                                                                                     name={`[${index}].quantity`}
-                                                                                    value={producto.quantity}
+                                                                                    value={producto.quantity ? producto.quantity : ''}
                                                                                     onChange={handleChange}
                                                                                     bg='gray.700' fontSize='20px' color='white'
                                                                                 />
