@@ -424,37 +424,14 @@ export default function SalesCreate() {
             }
 
             {
-                <SalesCreateTicket
-                    formikValues={formik.values}
-                    stockListData={stockListData}
-                    total={total}
-                    ref={componentToPrintRef}
-                />
-
-                // <Modal
-                //     isOpen={ticketQuestionModalDisclosure.isOpen}
-                //     onClose={() => ticketQuestionModalDisclosure.onClose()}
-                //     isCentered
-                //     size='4xl'
-                //     motionPreset='slideInBottom'>
-                //     <ModalOverlay />
-                //     <ModalContent >
-                //         <ModalCloseButton />
-                //         <ModalBody p='5rem' textAlign='center'>
-                //             <Heading>Desea imprimir el ticket?</Heading>
-                //             <small>Ticket:</small>
-                //             <SalesCreateTicket
-                //                 formikValues={formik.values}
-                //                 stockListData={stockListData}
-                //                 total={total}
-                //                 ref={componentToPrintRef}
-                //             />
-                //         </ModalBody>
-                //         <ModalFooter>
-                //             <Button colorScheme='purple' onClick={() => handlePrint()}>Imprimir ticket</Button>
-                //         </ModalFooter>
-                //     </ModalContent>
-                // </Modal >
+                <Box style={{ display: 'none' }}>
+                    <SalesCreateTicket
+                        formikValues={formik.values}
+                        stockListData={stockListData}
+                        total={total}
+                        ref={componentToPrintRef}
+                    />
+                </Box>
             }
 
 
