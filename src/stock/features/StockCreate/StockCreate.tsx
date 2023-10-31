@@ -251,7 +251,7 @@ export default function StockCreate() {
                                                 <Input
                                                     type='number'
                                                     name="quantity"
-                                                    value={formik.values.quantity}
+                                                    value={formik.values.quantity ? formik.values.quantity : ''}
                                                     onBlur={formik.handleBlur}
                                                     onChange={formik.handleChange}
                                                     bg='gray.700' fontSize='20px' color='white'
@@ -275,7 +275,7 @@ export default function StockCreate() {
                                             <Input
                                                 type='number'
                                                 name='buyPrice'
-                                                value={+formik.values.buyPrice}
+                                                value={formik.values.buyPrice ? +formik.values.buyPrice : ''}
                                                 onChange={formik.handleChange}
                                                 bg='gray.700'
                                                 fontSize='20px'
@@ -301,7 +301,7 @@ export default function StockCreate() {
                                             <Input
                                                 type='number'
                                                 name='sellPrice'
-                                                value={formik.values.sellPrice}
+                                                value={formik.values.sellPrice ? formik.values.sellPrice : ''}
                                                 onChange={formik.handleChange}
                                                 bg='gray.700'
                                                 fontSize='20px'
