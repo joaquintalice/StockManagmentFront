@@ -15,9 +15,10 @@ interface confirmModalProps {
     stockListData: Product[]
     total: number
     handleSaleFunction: () => void
+    handlePrint: () => void
 }
 
-const SalesCreateConfirmModal: React.FC<confirmModalProps> = ({ formikValues, handleSaleFunction, isOpen, onClose, stockListData, total }) => {
+const SalesCreateConfirmModal: React.FC<confirmModalProps> = ({ formikValues, handleSaleFunction, isOpen, onClose, stockListData, total, handlePrint }) => {
 
     return (
         <Modal
@@ -133,12 +134,15 @@ const SalesCreateConfirmModal: React.FC<confirmModalProps> = ({ formikValues, ha
                     </TableContainer>
                 </ModalBody>
 
-                <ModalFooter>
-                    <Button colorScheme='red' mr={3} onClick={() => onClose()}>
+                <ModalFooter gap={3}>
+                    <Button colorScheme='red' onClick={() => onClose()}>
                         Cancelar
                     </Button>
                     <Button colorScheme='green' onClick={() => handleSaleFunction()}>
-                        Confirmar
+                        Confirmar sin imprimir ticket
+                    </Button>
+                    <Button colorScheme='green' onClick={() => { handleSaleFunction(); handlePrint() }}>
+                        Confirmar e imprimir ticket
                     </Button>
                 </ModalFooter>
             </ModalContent>
