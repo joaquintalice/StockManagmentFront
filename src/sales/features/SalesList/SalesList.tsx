@@ -29,7 +29,12 @@ export default function SalesList() {
                     setError(true)
                     return
                 }
-                setData(data)
+                const sortedDataByMostRecentDate = data.slice().sort((a: ISales, b: ISales) => {
+                    const dateA = new Date(a.date);
+                    const dateB = new Date(b.date);
+                    return dateB.getTime() - dateA.getTime();
+                });
+                setData(sortedDataByMostRecentDate)
                 setLoading(false)
 
             } catch (error) {
