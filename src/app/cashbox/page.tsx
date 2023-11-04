@@ -1,5 +1,6 @@
 import CashboxAmount from '@/cashbox/features/CashboxAmount'
-import CashboxHeader from '@/cashbox/features/CashboxHeader'
+import MainHeader from '@/shared/components/Header'
+
 import PageLayout from '@/shared/components/layouts/pageLayout'
 import React from 'react'
 
@@ -8,7 +9,11 @@ export default function SalesPage() {
         <PageLayout>
             {{
                 header: (
-                    <CashboxHeader />
+                    <MainHeader
+                        title='Caja'
+                        btnText='Cerrar caja'
+                        btnHref='#'
+                    />
                 ),
                 content: (
                     <CashboxAmount />

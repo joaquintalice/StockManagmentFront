@@ -9,7 +9,7 @@ interface PeopleLayoutProps {
 }
 
 const PageLayout = ({ children }: PeopleLayoutProps) => (
-    <Stack h="full" pb={24} px={6} spacing={8}>
+    <Stack h="full" pb={0} px={0} spacing={8}>
         {children.header}
         {children.content}
     </Stack>

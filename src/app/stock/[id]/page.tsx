@@ -1,5 +1,5 @@
+import MainHeader from '@/shared/components/Header'
 import PageLayout from '@/shared/components/layouts/pageLayout'
-import MainHeader from '@/stock/features/StockHeader'
 import StockUpdate from '@/stock/features/StockUpdate/StockUpdate'
 import { Params } from 'next/dist/shared/lib/router/utils/route-matcher'
 

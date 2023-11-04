@@ -60,7 +60,7 @@ export default function Navbar({
             </Drawer>
             {/* mobilenav */}
             <MobileNav display={{ base: 'flex', md: 'none' }} onOpen={onOpen} />
-            <Box ml={{ base: 0, md: 60 }} p="4">
+            <Box ml={{ base: 0, md: 60 }} p="0">
                 {children}
             </Box>
         </Box>
@@ -82,8 +82,8 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
             h="full"
             {...rest}>
             <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
-                <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold" display='flex' gap='1rem' alignItems='center'>
-                    Stock app <PiPlantBold color='green' />
+                <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold" display='flex' gap='1rem' alignItems='center' justifyContent='center'>
+                    Stock App <PiPlantBold color='green' />
                 </Text>
                 <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
             </Flex>
@@ -160,7 +160,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
             />
 
             <Text fontSize="2xl" ml="8" fontFamily="monospace" fontWeight="bold" display='flex' gap='1rem' alignItems='center'>
-                Stock app <PiPlantBold color='green' />
+                Stock App  <PiPlantBold color='green' />
             </Text>
         </Flex>
     )

@@ -1,7 +1,7 @@
 import PageLayout from '@/shared/components/layouts/pageLayout'
-import MainHeader from '@/stock/features/StockHeader'
 import React from 'react'
 import SalesCreate from '../../../sales/features/SalesCreate/SalesCreate';
+import MainHeader from '@/shared/components/Header';
 
 export default function SalesPage() {
     return (

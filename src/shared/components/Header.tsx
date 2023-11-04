@@ -19,7 +19,7 @@ const MainHeader: React.FC<HeaderProps> = ({ title, btnHref, btnText }) => {
 
 
     return (
-        <Flex justify="space-between" wrap='wrap' gap={1}>
+        <Flex justify="space-between" wrap='wrap' gap={1} my={15} mx={15}>
             <Link href='/'>
                 <Heading justifyContent='center' as='h1'>{title}</Heading>
             </Link>

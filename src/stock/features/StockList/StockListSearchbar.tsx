@@ -1,6 +1,6 @@
 'use client'
-import { Input } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import { Box, Input } from '@chakra-ui/react'
+import React from 'react'
 
 interface SharedStateProps {
     searchBarValue: string
@@ -14,7 +14,7 @@ export default function StockSearchbar({ searchBarValue, setSearchBarValue }: Sh
     }
 
     return (
-        <div>
+        <Box mx={15}>
 
             <Input
                 width='auto'
@@ -26,7 +26,7 @@ export default function StockSearchbar({ searchBarValue, setSearchBarValue }: Sh
                 onChange={handleSearchbarInputChange}
             />
 
-        </div>
+        </Box>
     )
 }
 
