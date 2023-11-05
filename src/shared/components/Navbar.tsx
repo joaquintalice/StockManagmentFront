@@ -25,6 +25,7 @@ import Link from 'next/link'
 import { PiPlantBold } from 'react-icons/pi'
 import { MdPointOfSale } from 'react-icons/md'
 import { GiCash } from 'react-icons/gi'
+import { usePathname } from 'next/navigation'
 
 interface LinkItemProps {
     name: string
@@ -72,6 +73,8 @@ interface SidebarProps extends BoxProps {
 }
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+    const pathname = usePathname()
+    console.log(pathname)
     return (
         <Box
             bg={useColorModeValue('white', 'gray.900')}
@@ -88,7 +91,14 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
                 <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
             </Flex>
             {LinkItems.map((link) => (
-                <NavItem key={link.name} icon={link.icon} href={link.href}>
+                <NavItem
+                    key={link.name}
+                    icon={link.icon}
+                    href={link.href}
+                    background={`${pathname === link.href ? 'green.300' : ''}`}
+                    color={`${pathname === link.href ? 'white' : ''}`}
+                    my={2}
+                >
                     {link.name}
                 </NavItem>
             ))}
