@@ -74,7 +74,6 @@ interface SidebarProps extends BoxProps {
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
     const pathname = usePathname()
-    console.log(pathname)
     return (
         <Box
             bg={useColorModeValue('white', 'gray.900')}
