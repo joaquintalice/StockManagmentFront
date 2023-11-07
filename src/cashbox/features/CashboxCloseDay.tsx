@@ -11,7 +11,7 @@ interface CashBoxCloseDayProps {
     total: number
 }
 
-export const CashboxCloseDay: React.FC<CashBoxCloseDayProps> = ({ total, cashboxIsClosed, setCashboxIsClosed }) => {
+export const CashboxCloseDay: React.FC<CashBoxCloseDayProps> = ({ total }) => {
 
     const toast = useToast()
     const closeCBModalDisclosure = useDisclosure()
