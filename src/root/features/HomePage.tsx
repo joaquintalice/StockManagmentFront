@@ -12,7 +12,7 @@ export const HomePage = () => {
         >
 
             <GridItem gridRowStart='span 2' gridColumnStart='1' display={{ base: 'none', lg: 'grid' }}>
-                <Box background={'blue'} h={'100%'} >
+                <Box h={'100%'} >
                     <Img src='/assets/HomePageAssets/homePageContentBanner.jpg' h={'100%'} w={'100%'} objectFit="cover" />
                 </Box>
             </GridItem>
