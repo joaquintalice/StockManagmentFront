@@ -11,8 +11,8 @@ export default function SalesPage() {
                 header: (
                     <MainHeader
                         title='Caja'
-                        btnText='Cerrar caja'
-                        btnHref='#'
+                        btnText='Volver al inicio'
+                        btnHref='/'
                     />
                 ),
                 content: (

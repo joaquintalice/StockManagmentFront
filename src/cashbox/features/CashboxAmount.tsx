@@ -1,9 +1,10 @@
 'use client'
-import { Box, Stat, StatHelpText, StatLabel, StatNumber, Tag, Text } from '@chakra-ui/react'
+import { Box, Button, Stat, StatHelpText, StatLabel, StatNumber, Tag, Text } from '@chakra-ui/react'
 import CashboxRepository from '../data/repository/CashboxRepository'
 import React, { useEffect, useState } from 'react'
 import formatDatetime from '@/shared/utils/formatDate';
 import ICashbox from '../data/interfaces/ICashbox';
+import { CashboxCloseDay } from './CashboxCloseDay';
 
 export default function CashboxAmount() {
 
@@ -22,7 +23,7 @@ export default function CashboxAmount() {
             setCashboxData(cashbox)
         }
         getCashbox();
-    }, [])
+    }, [cashboxData])
 
     return (
         <>
@@ -56,6 +57,13 @@ export default function CashboxAmount() {
                                     </Tag>
                                 </StatHelpText>
                             </Stat>
+                            {
+                                cashboxData && (
+                                    <CashboxCloseDay
+                                        total={cashboxData?.amount}
+                                    />
+                                )
+                            }
                         </Box>
                     )
             }
