@@ -8,9 +8,11 @@ import { CashboxCloseDay } from './CashboxCloseDay';
 
 export default function CashboxAmount() {
 
+
     const [cashboxData, setCashboxData] = useState<ICashbox>();
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<boolean>(false);
+
 
     useEffect(() => {
         setError(false)
@@ -23,7 +25,14 @@ export default function CashboxAmount() {
             setCashboxData(cashbox)
         }
         getCashbox();
-    }, [cashboxData])
+    }, [])
+
+    const handleCashboxUpdate = (newAmount: number) => {
+        // Update the cashbox data in this component's state
+        cashboxData ? setCashboxData({ ...cashboxData, amount: newAmount }) : null;
+
+    };
+
 
     return (
         <>
@@ -52,7 +61,7 @@ export default function CashboxAmount() {
                                     Último registro:
                                     <Tag colorScheme='green' fontSize={20}>
                                         {
-                                            formatDatetime(cashboxData?.updatedAt)
+                                            cashboxData?.updatedAt && formatDatetime(cashboxData?.updatedAt)
                                         }
                                     </Tag>
                                 </StatHelpText>
@@ -61,6 +70,7 @@ export default function CashboxAmount() {
                                 cashboxData && (
                                     <CashboxCloseDay
                                         total={cashboxData?.amount}
+                                        onUpdate={handleCashboxUpdate}
                                     />
                                 )
                             }
