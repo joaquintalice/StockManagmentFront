@@ -9,9 +9,10 @@ import CashboxHistoryRepository from '../data/repository/CashboxHistoryRepositor
 
 interface CashBoxCloseDayProps {
     total: number
+    onUpdate: (newAmount: number) => void
 }
 
-export const CashboxCloseDay: React.FC<CashBoxCloseDayProps> = ({ total }) => {
+export const CashboxCloseDay: React.FC<CashBoxCloseDayProps> = ({ total, onUpdate }) => {
 
     const toast = useToast()
     const closeCBModalDisclosure = useDisclosure()
@@ -23,7 +24,7 @@ export const CashboxCloseDay: React.FC<CashBoxCloseDayProps> = ({ total }) => {
             amount: 0
         },
         onSubmit: (values) => {
-            setAmount(+values.amount)
+            setAmount(+values.amount);
             closeCBModalDisclosure.onClose()
             confirmCBModalDisclosure.onOpen()
         },
@@ -51,6 +52,7 @@ export const CashboxCloseDay: React.FC<CashBoxCloseDayProps> = ({ total }) => {
                 isClosable: true,
             });
         }
+        onUpdate(amount);
         confirmCBModalDisclosure.onClose()
     }
 
