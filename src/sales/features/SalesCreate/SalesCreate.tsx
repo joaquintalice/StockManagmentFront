@@ -76,7 +76,8 @@ export default function SalesCreate() {
                 errors[index][key] = error.message;
             });
             return errors;
-        }
+        },
+
 
 
     })
@@ -194,7 +195,7 @@ export default function SalesCreate() {
 
             formik.resetForm()
             setSaleCounter(saleCounter + 1)
-            console.log(saleCounter)
+
         } catch (error) {
             console.log(error)
             setError(true)
@@ -243,7 +244,7 @@ export default function SalesCreate() {
                                                                 <Td my={5}>No hay productos</Td>
                                                             </tr>) :
                                                             formik.values.map((producto, index) => {
-                                                                console.log(producto)
+
                                                                 return (
                                                                     <tr key={index}>
                                                                         <Td width='30%'>
@@ -274,7 +275,7 @@ export default function SalesCreate() {
                                                                                                 stockListData
                                                                                                     .filter(prod => prod?.id === +producto?.name)
                                                                                                     .map(prod => {
-                                                                                                        // console.log(prod)
+
                                                                                                         return (
                                                                                                             <Text key={prod?.id}>
                                                                                                                 {prod?.quantity} {prod?.unit}

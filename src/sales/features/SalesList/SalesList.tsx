@@ -175,12 +175,9 @@ export default function SalesList() {
                                     </Tbody>
                                 </Table>
                             </TableContainer>
-                            {/* <Tag colorScheme='green'>Precio de compra: {currentDetailData.map}</Tag> */}
+
                             <Tag colorScheme='teal'>Beneficio total: ${currentDetailData.reduce((totalBenefit, prod) => {
                                 const worth = (prod.sellPrice - prod.buyPrice) * prod.quantity;
-                                console.log(prod.quantity);
-                                console.log(prod.buyPrice);
-                                console.log(prod.sellPrice);
                                 return totalBenefit + worth;
                             }, 0)}</Tag>
 

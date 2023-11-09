@@ -47,15 +47,6 @@ export default function StockCreate() {
             setError(false);
             setCreateModal(false)
             setUpdateModal(false)
-
-            console.log(prodId)
-            console.log(updatedProd)
-            console.log(oldProd)
-            console.log(newProd)
-            console.log(updateModal)
-            console.log(createModal)
-            console.log('******************************************');
-
             async function submitHandler() {
 
                 const data = {

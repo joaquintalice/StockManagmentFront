@@ -12,9 +12,6 @@ type TicketProps = {
 }
 
 const SalesCreateTicket = React.forwardRef(({ formikValues, stockListData, total }: TicketProps, ref) => {
-    console.log(formikValues)
-    console.log(stockListData)
-    console.log(total)
     return (
         <Box ref={ref} p={2}>
             <Center>
