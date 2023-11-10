@@ -60,7 +60,7 @@ export default function SalesList() {
             {
                 loading ? (<Loading />) : (
                     <TableContainer>
-                        <Table size='md'>
+                        <Table size='md' variant='striped' colorScheme='whatsapp'>
                             <Thead>
                                 <Tr>
                                     <Th textAlign='center' fontSize='0.85rem'>Fecha</Th>

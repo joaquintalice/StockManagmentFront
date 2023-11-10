@@ -13,7 +13,7 @@ interface StockTableRowProps {
 
 const StockTableRow: React.FC<StockTableRowProps> = ({ product, onDelete }) => {
     return (
-        <Tr key={product.id}>
+        <Tr key={product.id} >
             <Td>
                 <Badge fontSize='1em' colorScheme='green'>
                     {product.name}
@@ -33,7 +33,7 @@ const StockTableRow: React.FC<StockTableRowProps> = ({ product, onDelete }) => {
             <Td>
                 <Text fontSize='1.2rem' textAlign='center'>{formatDatetime(product.updatedAt)}</Text>
             </Td>
-            <td style={{ textAlign: 'center' }}>
+            <Td style={{ textAlign: 'center' }}>
                 <Link href={`stock/${product.id.toString()}`} mr='2'>
                     <Button colorScheme='teal'>Añadir</Button>
                 </Link>
@@ -44,7 +44,7 @@ const StockTableRow: React.FC<StockTableRowProps> = ({ product, onDelete }) => {
                     icon={<FiTrash2 />}
                     onClick={() => onDelete(product.id, product.name)}
                 />
-            </td>
+            </Td>
         </Tr>
     );
 };

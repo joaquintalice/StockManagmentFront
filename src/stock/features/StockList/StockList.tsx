@@ -148,7 +148,7 @@ export default function StockList() {
                     <Loading />
                 ) : data && data.length >= 1 ? (
                     <TableContainer>
-                        <Table size='sm'>
+                        <Table size='sm' variant='striped' colorScheme='whatsapp'>
                             <Thead>
                                 <Tr>
                                     <Th textAlign='center'>Nombre</Th>
