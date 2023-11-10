@@ -1,6 +1,6 @@
 'use client'
 
-import { Alert, AlertIcon, Badge, Box, Button, Center, Flex, Heading, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalOverlay, NumberInput, NumberInputField, Spinner, Stat, StatLabel, StatNumber, Table, Tbody, Td, Text, Th, Thead, useDisclosure, useToast } from '@chakra-ui/react'
+import { Alert, AlertIcon, Badge, Box, Button, Center, Flex, Heading, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, NumberInput, Spinner, Stat, StatLabel, StatNumber, Table, Tbody, Td, Text, Th, Thead, useDisclosure, useToast } from '@chakra-ui/react'
 import { FormikValues, useFormik } from 'formik'
 import React, { useEffect, useState, useRef } from 'react'
 import { SalesSchema } from '../../schema/sales.schema'
@@ -28,8 +28,6 @@ export default function SalesCreate() {
     const loadingModalDisclosure = useDisclosure()
     const confirmSaleModalDisclosure = useDisclosure();
     const questionModalDisclosure = useDisclosure();
-    const ticketQuestionModalDisclosure = useDisclosure();
-
 
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<boolean>(false)
@@ -37,13 +35,13 @@ export default function SalesCreate() {
     const [stockListData, setStockListData] = useState<Partial<Product[]>>([]);
     const [total, setTotal] = useState<number>(0);
 
-    const [products, setProducts] = useState([{ name: '', quantity: 0 }]);
+
     const [saleCounter, setSaleCounter] = useState<number>(0);
 
 
 
     const formik = useFormik({
-        initialValues: products,
+        initialValues: [{ name: '', quantity: 0 }],
 
         onSubmit: (values) => {
             confirmSaleModalDisclosure.onOpen()
@@ -256,7 +254,7 @@ export default function SalesCreate() {
                                                                                 placeholder='Selecciona el producto'
                                                                             />
                                                                             {
-                                                                                formik.errors[index] && formik.errors[index].name && (
+                                                                                formik.touched[index] && formik.errors[index] && formik.errors[index].name && (
                                                                                     <Alert status='error' variant='left-accent' mt='5px'>
                                                                                         <AlertIcon />
                                                                                         {formik.errors[index].name}
@@ -298,7 +296,7 @@ export default function SalesCreate() {
                                                                                 />
                                                                             </NumberInput>
                                                                             {
-                                                                                formik.errors[index] && formik.errors[index].quantity && (
+                                                                                formik.touched[index] && formik.errors[index] && formik.errors[index].quantity && (
                                                                                     <Alert status='error' variant='left-accent' mt='5px'>
                                                                                         <AlertIcon />
                                                                                         {formik.errors[index].quantity}
@@ -381,7 +379,7 @@ export default function SalesCreate() {
                                             </Tbody>
                                         </Table>
 
-                                        <Box textAlign='center' mt={10}>
+                                        <Box textAlign='center' mt={10} mb='10rem'>
                                             <Button type='submit' colorScheme='green'>Confirmar venta</Button>
                                         </Box>
                                     </form>
