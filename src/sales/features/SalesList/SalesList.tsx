@@ -6,17 +6,18 @@ import ISales from '../../data/interfaces/Sales.interface'
 import { SalesRepository } from '../../data/repository/SalesRepository'
 import { RobotoFont, scFont } from '@/shared/utils/fonts'
 import ICreateSalesDetail from '../../data/interfaces/SalesDetail.interface'
+import Loading from '@/app/loading'
 
 export default function SalesList() {
 
 
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [data, setData] = useState<ISales[]>([{}]);
+    const [data, setData] = useState<ISales[]>();
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<boolean>(true);
     const [detailModal, setDetailModal] = useState<boolean>(false)
     const [currentDetailData, setCurrentDetailData] = useState<ICreateSalesDetail[]>([])
-    const [currentSale, setCurrentSale] = useState<ISales>({})
+    const [currentSale, setCurrentSale] = useState<ISales>()
 
     useEffect(() => {
         setLoading(false)
@@ -38,7 +39,8 @@ export default function SalesList() {
                 setLoading(false)
 
             } catch (error) {
-                setLoading(true)
+                setLoading(false)
+                setError(true)
             }
         }
         getData()
@@ -56,7 +58,7 @@ export default function SalesList() {
 
 
             {
-                loading ? (<>Cargando...</>) : (
+                loading ? (<Loading />) : (
                     <TableContainer>
                         <Table size='md'>
                             <Thead>
@@ -70,23 +72,30 @@ export default function SalesList() {
                             <Tbody>
                                 {
                                     error ? (<>No hay ventas registradas</>) :
-                                        data.map((prod: ISales, index) => (
-                                            <Tr key={index}>
-                                                <Td textAlign='center'>
-                                                    <Badge fontSize='1.2em' colorScheme='green' textAlign='center'>
-                                                        {formatDatetime(prod.date)}
-                                                    </Badge>
-                                                </Td>
-                                                <Td fontSize='1.2rem' textAlign='center'>
-                                                    ${prod.total}
-                                                </Td>
-                                                <Td style={{ textAlign: 'center' }}>
-                                                    <Button colorScheme='teal' onClick={() => setDetail(prod.stockMovementDetail, prod)}>
-                                                        Ver detalles
-                                                    </Button>
+                                        !data ? (
+                                            <Tr>
+                                                <Td>
+                                                    < Loading />
                                                 </Td>
                                             </Tr>
-                                        ))
+                                        ) :
+                                            data.map((prod: ISales, index) => (
+                                                <Tr key={index}>
+                                                    <Td textAlign='center'>
+                                                        <Badge fontSize='1.2em' colorScheme='green' textAlign='center'>
+                                                            {formatDatetime(prod.date)}
+                                                        </Badge>
+                                                    </Td>
+                                                    <Td fontSize='1.2rem' textAlign='center'>
+                                                        ${prod.total}
+                                                    </Td>
+                                                    <Td style={{ textAlign: 'center' }}>
+                                                        <Button colorScheme='teal' onClick={() => setDetail(prod.stockMovementDetail, prod)}>
+                                                            Ver detalles
+                                                        </Button>
+                                                    </Td>
+                                                </Tr>
+                                            ))
                                 }
                             </Tbody>
                         </Table>
@@ -95,7 +104,7 @@ export default function SalesList() {
             }
 
             {
-                detailModal ? (<Modal
+                detailModal && (<Modal
                     isOpen={isOpen}
                     onClose={onClose}
                     isCentered
@@ -190,7 +199,7 @@ export default function SalesList() {
                             </Button>
                         </ModalFooter>
                     </ModalContent>
-                </Modal >) : (<></>)
+                </Modal >)
             }
 
         </>
