@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
 import formatDatetime from '@/shared/utils/formatDate';
 import ICashbox from '../data/interfaces/ICashbox';
 import { CashboxCloseDay } from './CashboxCloseDay';
+import Loading from '@/app/loading';
 
 export default function CashboxAmount() {
 
@@ -38,11 +39,7 @@ export default function CashboxAmount() {
         <>
             {
                 loading ? (
-                    <Box>
-                        <Text>
-                            Loading...
-                        </Text>
-                    </Box>
+                    <Loading />
                 ) :
                     error ? (
                         <Box textAlign='center'>
