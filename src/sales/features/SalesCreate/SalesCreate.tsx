@@ -144,7 +144,7 @@ export default function SalesCreate() {
 
             await SalesRepository.insert({ total: total });
             const sale = await SalesRepository.getAll();
-            const stockMovementId = sale[sale.length - 1].id;
+            const stockMovementId = sale[0].id
 
 
             const data = formik.values
