@@ -5,9 +5,9 @@ const BASE_URL = 'http://localhost:3000/stockmovement'
 export const SalesRepository = {
 
 
-    getAll: async () => {
+    getAll: async (offset: number) => {
         try {
-            const res = await fetch(`${BASE_URL}`, {
+            const res = await fetch(`${BASE_URL}?offset=${offset}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

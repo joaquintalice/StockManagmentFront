@@ -143,8 +143,9 @@ export default function SalesCreate() {
             loadingModalDisclosure.onOpen()
 
             await SalesRepository.insert({ total: total });
-            const sale = await SalesRepository.getAll();
-            const stockMovementId = sale[0].id
+            const sale = await SalesRepository.getAll(0);
+
+            const stockMovementId = sale.stockMovement[0].id
 
 
             const data = formik.values
