@@ -47,7 +47,7 @@ export const HomePage = () => {
                     días anteriores y cerrar el día actual.'
                     buttonColorScheme='whatsapp'
                     buttonText='Ir hacia la página'
-                    btnHref='/sales'
+                    btnHref='/cashbox'
                 />
             </GridItem>
 
